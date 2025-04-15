@@ -1,5 +1,6 @@
 import express from 'express';
 import pkg from 'pg';
+import bodyParser from 'body-parser';
 
 const app = express()
 const port = 3000
@@ -20,6 +21,13 @@ await db.connect();
 await db.query("SET search_path TO 'velivelo';")
 /*const res = await db.query('SELECT * FROM Client;') 
 console.log(res.rows[0]);*/
+
+// Test 
+
+app.get("/", (req, res) => {
+	res.json({ message: "Welcome to bezkoder application." });
+});
+
 
 // Clients
 
