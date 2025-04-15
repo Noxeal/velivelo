@@ -6,7 +6,7 @@
     </div>
     <div class="password_row">
       <label for="password">Mot de passe : </label>
-      <input id="password" type="password" v-model="password" />
+      <input id="password" type="password" v-model="password"/>
     </div>
     <button @click="connection">Se connecter</button>
   </div>

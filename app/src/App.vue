@@ -1,50 +1,17 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
 import Connection from './components/Connection.vue'
-import NavBar from './components/NavBar.vue'
+import NavBar from './components/commons/NavBar.vue'
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!"/>
-      <NavBar current_page="Compte" :is_gerant=false></NavBar>
-    </div>
+    <NavBar current_page="Compte" :is_gerant=false :est_connecte=false></NavBar>
   </header>
 
   <main>
-    <Connection />
+    <Connection/>
   </main>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
 </style>

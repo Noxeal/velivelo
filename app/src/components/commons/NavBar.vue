@@ -1,0 +1,98 @@
+<script setup>
+const props = defineProps({
+  current_page: {
+    type: String,
+    required: true,
+  },
+  is_gerant: {
+    type: Boolean,
+    required: true,
+  },
+  est_connecte: {
+    type: Boolean,
+    required: true,
+  }
+})
+
+let all_pages = [
+    { component: 'Louer', label: 'Louer', gerant_only: false },
+    { component: 'ListeLocations', label: 'Liste des locations', gerant_only: false },
+    { component: 'ListeVelos', label: 'Liste des vélos', gerant_only: false },
+    { component: 'ListeClients', label: 'Liste des clients', gerant_only: true },
+]
+
+let account_pages = [
+    { component: 'Compte', label: 'Mon Compte', gerant_only: false },
+    { component: 'Deconnexion', label: 'Déconnexion', gerant_only: false },
+]
+</script>
+
+<template>
+    <nav>  
+        <div class="buttons_pages">
+            <button 
+                v-for="page in all_pages" 
+                v-show="is_gerant || !page.gerant_only" 
+                :class="current_page === page.component ? 'active' : ''"
+                onclick="$emit('change_page', page.component)"
+                >
+                        {{ page.label }}
+            </button>
+        </div>
+
+      <div class="buttons_account" v-if="est_connecte">
+        <button 
+            v-for="page in account_pages" 
+            v-show="is_gerant || !page.gerant_only" 
+            :class="current_page === page.component ? 'active' : ''"
+            onclick="$emit('change_page', page.component)"
+            >
+                    {{ page.label }}
+        </button>
+      </div>
+
+      <div v-else>
+        <button>
+          Se connecter
+        </button>
+      </div>
+      
+    </nav>
+  </template>
+  
+
+<style scoped>
+
+nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-dark-blue);
+}
+
+button {
+  padding: 2rem 4rem;
+  /* Pas de background */
+  background: none;
+  border: none;
+  color : var(--color-pink);
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--color-pink);
+  color: var(--color-dark-blue);
+}
+
+.active{
+    color: var(--color-yellow);
+    background-color: #008F88;
+}
+
+</style>
