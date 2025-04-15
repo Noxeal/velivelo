@@ -1,0 +1,67 @@
+SET SCHEMA 'velivelo';
+DROP TABLE if exists Location;
+DROP TABLE if exists Client;
+DROP TABLE if exists Gerant;
+DROP TABLE if exists Velo;
+
+CREATE TABLE Client(
+	id INTEGER PRIMARY KEY,
+	prenom VARCHAR(50) NOT NULL,
+	nom VARCHAR(50) NOT NULL,
+	email VARCHAR(100) NOT NULL,
+	mot_de_passe VARCHAR(50)
+);
+
+CREATE TABLE Gerant(
+	id INTEGER PRIMARY KEY,
+	prenom VARCHAR(50) NOT NULL,
+	nom VARCHAR(50) NOT NULL,
+	email VARCHAR(100) NOT NULL,
+	mot_de_passe VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Velo(
+	id INTEGER PRIMARY KEY,
+	nom VARCHAR(50) NOT NULL,
+	etat VARCHAR(50) NOT NULL,
+	maintenance BOOLEAN NOT NULL,
+	type VARCHAR(50) NOT NULL,
+	duree_de_vie INTEGER NOT NULL,
+	cycle_de_vie INTEGER NOT NULL,
+	annee_mise_en_service INTEGER NOT NULL,
+	prix DECIMAL NOT NULL,
+	photo VARCHAR(100)
+);
+
+CREATE TABLE Location(
+	id INTEGER PRIMARY KEY,
+	etat VARCHAR(50) NOT NULL,
+	date_debut DATE NOT NULL,
+	date_fin_estimee DATE NOT NULL CHECK (date_fin_estimee > date_debut),
+	date_rendu DATE CHECK (date_rendu > date_debut),
+	paiement_actuel DECIMAL NOT NULL,
+	id_client INTEGER NOT NULL,
+	id_velo INTEGER NOT NULL,
+	id_gerant INTEGER,
+	FOREIGN KEY (id_client) REFERENCES Client(id),
+	FOREIGN KEY (id_velo) REFERENCES Velo(id),
+	FOREIGN KEY (id_gerant) REFERENCES Gerant(id)
+);
+
+INSERT INTO Velo Values (1, 'Vélo de course trop rapide', 'Neuf', FALSE, 'Vélo de course', 5, 300, 2024, 10.0, './velo_course_rapide');
+INSERT INTO Velo Values (2, 'VTT trop rapide', 'Quasi neuf', FALSE, 'VTT', 5, 300, 2024, 10.0, './vtt_rapide');
+INSERT INTO Velo Values (3, 'Vélo de ville trop rapide', 'Neuf', FALSE, 'Vélo de ville', 5, 300, 2024, 10.0, './vélo_ville_rapide');
+INSERT INTO Velo Values (4, 'Vélo de course moyennement rapide', 'Neuf', FALSE, 'Vélo de course', 5, 300, 2021, 10.0, './velo_course_moyen');
+INSERT INTO Velo Values (5, 'VTT moyennement rapide', 'Quasi neuf', FALSE, 'VTT', 5, 300, 2021, 10.0, './vtt_moyen');
+INSERT INTO Velo Values (6, 'Vélo de ville moyennement rapide', 'Neuf', FALSE, 'Vélo de ville', 5, 300, 2022, 10.0, './vélo_ville_moyen');
+INSERT INTO Velo Values (7, 'Vélo de course lent', 'Usé', FALSE, 'Vélo de course', 5, 300, 2015, 10.0, './velo_course_lent');
+INSERT INTO Velo Values (8, 'VTT lent', 'Quasi neuf', FALSE, 'VTT', 5, 300, 2018, 10.0, './vtt_lent');
+INSERT INTO Velo Values (9, 'Vélo de ville lent', 'Neuf', FALSE, 'Vélo de ville', 5, 300, 2012, 10.0, './vélo_ville_lent');
+INSERT INTO Velo Values (10, 'Vélo sans roues', 'Usé', TRUE, 'Vélo de course', 5, 300, 2024, 10.0, './vélo_sans_roues');
+
+INSERT INTO Client Values (1, 'Maël', 'Le Rouzic', 'jeanhubert@gmail.com', 'toto');
+INSERT INTO Client Values (2, 'Margaux', 'Bisquay', 'loremipsum@gmail.fr', 'tata');
+
+INSERT INTO Gerant Values (1, 'Jean', 'Gérant', 'jeangerant@outlook.de', 'kartoffel salat');
+
+INSERT INTO Location Values (1, 'En Cours', '2024-04-12', '2024-05-12', NULL, 0.0, 1, 1, NULL);
