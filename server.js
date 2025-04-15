@@ -1,12 +1,20 @@
 import express from 'express';
+import pkg from 'pg';
 
 const app = express()
 const port = 3000
 
-import pkg from 'pg';
+// parse requests of content-type - application/json
+app.use(bodyParser.json());
+
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+// Connexion à la base
 const { Client: Db } = pkg;
 
-const db = new Db({user:'postgres', password:'1234', database:'velivelo'})
+const db = new Db({user:'postgres', password:'1a2b3c4D', database:'velivelo'})
 await db.connect();
 
 await db.query("SET search_path TO 'velivelo';")
