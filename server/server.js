@@ -1,6 +1,10 @@
 import express from 'express';
 import pkg from 'pg';
 import bodyParser from 'body-parser';
+import cors from 'cors';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express()
 const port = 3000
@@ -10,12 +14,14 @@ app.use(bodyParser.json());
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
-
+// allow cors
+app.use(cors())
 
 // Connexion à la base
+
 const { Client: Db } = pkg;
 
-const db = new Db({user:'postgres', password:'1a2b3c4D', database:'velivelo'})
+const db = new Db({user:process.env.db_user, password:process.env.db_password, database:process.env.db_name})
 await db.connect();
 
 await db.query("SET search_path TO 'velivelo';")
@@ -70,6 +76,29 @@ app.put('/client/update_mot_de_passe/:id', async (req, res)=> {
 app.delete('/client/:id', async (req, res)=> {
 	await db.query(`DELETE FROM Client where id = ${req.params.id};`) 
 	res.send("ça marche !");
+});
+
+// Se connecter
+
+app.post('/se_connecter', async (req, res) => {
+	let account = req.body;
+	console.log(account);
+	let row_client = await db.query(`SELECT id from Client where email = '${account.email}' AND mot_de_passe = '${account.password}';`) 
+	if(row_client.rows.length == 0){
+		console.log("Pas de user");
+		res.send({
+			success: false,
+			message: "Email ou mot de passe incorrect"
+		  });
+	}
+	else{	
+		console.log("Id client : ",row_client.rows[0]);
+		res.send({
+			id_client: row_client.rows[0].id,
+			success: true,
+			message: "Connexion réussie !",
+		});
+	}
 });
 
 // Gérants
