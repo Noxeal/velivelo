@@ -205,7 +205,7 @@ app.delete('/location/:id', async (req, res)=> {
 	res.send("ça marche !");
 });
 
-
+// Ecoute sur le port
 
 app.listen(port, () => { 
 	console.log(`Example app listening at http://localhost:${port}`)
