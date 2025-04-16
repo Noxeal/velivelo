@@ -47,10 +47,18 @@ app.get('/client/:id', async (req, res)=>{
 	res.send(clients.rows[0]);
 });
 
-app.post('/client/:id', async (req, res)=> {
-	res.body;
-	let clients = await db.query('INSERT INTO Client Values ;') 
+app.post('/client/', async (req, res) => {
+	const { fname, surname, email, password } = req.body;
+	try {
+	  const clients = await db.query(
+		`INSERT INTO Client (prenom, nom, email, mot_de_passe) VALUES ($1, $2, $3, $4);`,
+		[fname, surname, email, password]
+	  );
 	res.send(clients.rows[0]);
+	} catch (err) {
+	  console.error(err);
+	  res.status(500).send('Erreur lors de la création du client');
+	}
 });
 
 app.put('/client/update_nom/:id', async (req, res)=> {

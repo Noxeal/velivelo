@@ -1,6 +1,7 @@
 <script setup>
 import Connection from './components/Connection.vue'
 import NavBar from './components/commons/NavBar.vue'
+import Inscription from './components/Inscription.vue'
 import BicycleInfos from './components/BicycleInfos.vue'
 </script>
 
