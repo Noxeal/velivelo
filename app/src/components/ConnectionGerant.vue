@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <h1 class="title">Se Connecter</h1>
+    <h1 class="title">Se Connecter (Gérant)</h1>
 
     <div class="input-row">
       <label for="email">Email :</label>
@@ -13,8 +13,7 @@
     </div>
 
     <button class="btn-connection" @click="connection">Se connecter</button>
-    <a class="link">Créer un compte</a>
-    <a @click=changePageToGerant class="link">Se connecter en tant que Gérant</a>
+    <a @click=changePageToClient class="link">Se connecter en tant que Client</a>
   </div>
 </template>
 
@@ -27,8 +26,8 @@ export default {
     }
   },
   methods: {
-    changePageToGerant() {
-      this.$emit('update:change_current_page', 'ConnectionGerant');
+    changePageToClient() {
+      this.$emit('update:change_current_page', 'Connection');
     },
     async connection() {
       try {
@@ -51,14 +50,14 @@ export default {
         console.log("Réponse du serveur :", json)
 
         // Émettre les événements vers le parent
-        this.$emit('update:handle_client', true, json.id_client);
+        this.$emit('update:handle_gerant', true, json.id_client);
 
       } catch (error) {
         console.error("Erreur de connexion :", error)
       }
     }
   },
-  emits: ['update:handle_client', 'update:change_current_page']
+  emits: ['update:handle_gerant', 'update:change_current_page']
 }
 </script>
 
@@ -119,7 +118,6 @@ export default {
   text-align: center;
   border-radius: 8px;
   font-size: 14px;
-  color: var();
   text-decoration: none;
   transition: color 0.2s ease;
 }
