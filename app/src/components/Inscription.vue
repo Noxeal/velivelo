@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 
+const emit = defineEmits('update:change_current_page');
+
 const fname = ref('');
 const surname = ref('');
 const email = ref('');
@@ -43,6 +45,7 @@ const onSubmit = async () => {
     } else {
       const data = await response.json();
       console.log("Client créé :", data);
+      emit('update:change_current_page', 'Liste_velos');
     }
 
   } catch (error) {
