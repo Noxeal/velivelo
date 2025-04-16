@@ -19,6 +19,10 @@ export default {
         id: {
             type: Number,
             required: true
+        },
+        is_list_element: {
+            type: Boolean,
+            default: false
         }
     },
     data() {

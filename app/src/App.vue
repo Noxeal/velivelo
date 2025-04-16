@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import Connection from './components/Connection.vue'
 import NavBar from './components/commons/NavBar.vue'
-import BicycleInfos from './components/BicycleInfos.vue'
+import BicycleCard from './components/BicycleCard.vue'
 
 const estConnecte = ref(false)
 const isGerant = ref(false)
