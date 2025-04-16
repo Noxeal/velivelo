@@ -1,6 +1,7 @@
 <script setup>
 import Connection from './components/Connection.vue'
 import NavBar from './components/commons/NavBar.vue'
+import BicycleInfos from './components/BicycleInfos.vue'
 </script>
 
 <template>
@@ -10,6 +11,7 @@ import NavBar from './components/commons/NavBar.vue'
 
   <main>
     <Connection/>
+    <BicycleInfos :id="3"></BicycleInfos>
   </main>
 </template>
 
