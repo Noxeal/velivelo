@@ -2,8 +2,8 @@
 import { ref } from 'vue'
 import Connection from './components/Connection.vue'
 import NavBar from './components/commons/NavBar.vue'
-import BicycleInfos from './components/BicycleInfos.vue'
 import ConnectionGerant from './components/ConnectionGerant.vue'
+import BicycleCard from './components/commons/BicycleCard.vue'
 
 const is_connected = ref(false)
 const is_gerant = ref(false)
