@@ -55,7 +55,7 @@ let disconnected_pages = [
         </button>
       </div>
 
-      <div v-else>
+      <div class="buttons_account" v-else>
         <button 
             v-for="page in disconnected_pages" 
             v-show="is_gerant || !page.gerant_only" 
@@ -73,9 +73,6 @@ let disconnected_pages = [
 <style scoped>
 
 nav {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   display: flex;
   align-items: center;

@@ -5,9 +5,9 @@
         </div>
         <div class="details">
             <h2>{{ bicycle.nom }}</h2>
-            <p><strong></strong> {{ bicycle.description }}</p>
+            <p v-if="!is_list_element"><strong></strong> {{ bicycle.description }}</p>
             <p><strong>État :</strong> {{ bicycle.etat }}</p>
-            <p><strong>Type :</strong> {{ bicycle.type }}</p>
+            <p v-if="!is_list_element"><strong>Type :</strong> {{ bicycle.type }}</p>
             <p><strong>Année de mise en service :</strong> {{ bicycle.annee_mise_en_service }}</p>
         </div>
     </div>
@@ -70,7 +70,10 @@ export default {
 }
 
 .photo img {
-    max-width: 200px;
+    /* max-width: 200px;
+    max-height: 200px; */
+    width: 200px;
+    height: 200px;
     border-radius: 8px;
 }
 

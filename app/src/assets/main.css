@@ -1,12 +1,5 @@
 @import './base.css';
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
-
 a {
   text-decoration: none;
   color: var(--color-dark-blue);
@@ -22,18 +15,23 @@ a {
 }
 
 @media (min-width: 1024px) {
+
+  #app {
+    width: 100%;
+    height: 100vh;
+  }
+
   body {
     display: flex;
     place-items: center;
+    width: 100%;
+    height: 100vh;
   }
 
   main{
     display: flex;
     justify-content: center;
-  }
-
-  #app {
-    width : 80%;
-    height: 80%;
+    width : 100%;
+    height: 80vh;
   }
 }
