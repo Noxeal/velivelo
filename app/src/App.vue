@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import Connection from './components/Connection/Connection.vue'
 import NavBar from './components/commons/NavBar.vue'
-import ConnectionGerant from './components/ConnectionGerant.vue'
+import ConnectionGerant from './components/Connection/ConnectionGerant.vue'
 import Inscription from './components/Inscription.vue'
 import BicycleCard from './components/commons/BicycleCard.vue'
 import Louer from './components/Connection/Louer.vue'
