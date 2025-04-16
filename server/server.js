@@ -233,6 +233,11 @@ app.get('/location/', async (req, res)=>{
 	res.send(locations.rows);
 });
 
+app.get('/location_list/', async (req, res)=>{
+	let locations = await db.query('SELECT Velo.id as id_velo, Velo.nom as nom_velo, Client.nom, Client.prenom, Velo.Etat, date_debut, date_fin_estimee FROM Location JOIN Client ON Location.id_client = Client.id JOIN Velo ON Location.id_velo = Velo.id;');
+	res.send(locations.rows);
+})
+
 app.get('/location/:id', async (req, res)=>{
 	let location = await db.query(`SELECT * FROM Location where id = ${req.params.id};`) 
 	res.send(location.rows[0]);
