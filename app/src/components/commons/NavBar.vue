@@ -8,7 +8,7 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-  est_connecte: {
+  is_connected: {
     type: Boolean,
     required: true,
   }
@@ -25,6 +25,10 @@ let account_pages = [
     { component: 'Compte', label: 'Mon Compte', gerant_only: false },
     { component: 'Deconnexion', label: 'Déconnexion', gerant_only: false },
 ]
+
+let disconnected_pages = [
+    { component: 'Connection', label: 'Se connecter', gerant_only: false },
+]
 </script>
 
 <template>
@@ -40,7 +44,7 @@ let account_pages = [
             </button>
         </div>
 
-      <div class="buttons_account" v-if="est_connecte">
+      <div class="buttons_account" v-if="is_connected">
         <button 
             v-for="page in account_pages" 
             v-show="is_gerant || !page.gerant_only" 
@@ -52,8 +56,13 @@ let account_pages = [
       </div>
 
       <div v-else>
-        <button>
-          Se connecter
+        <button 
+            v-for="page in disconnected_pages" 
+            v-show="is_gerant || !page.gerant_only" 
+            :class="current_page === page.component ? 'active' : ''"
+            onclick="$emit('change_page', page.component)"
+            >
+                    {{ page.label }}
         </button>
       </div>
       
