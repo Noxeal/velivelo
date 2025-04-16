@@ -1,10 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-import Connection from './components/Connection.vue'
+import Connection from './components/Connection/Connection.vue'
 import NavBar from './components/commons/NavBar.vue'
 import ConnectionGerant from './components/ConnectionGerant.vue'
 import Inscription from './components/Inscription.vue'
 import BicycleCard from './components/commons/BicycleCard.vue'
+import Louer from './components/Connection/Louer.vue'
+import BicycleList from './components/BicycleList.vue'
 
 const is_connected = ref(false)
 const is_gerant = ref(false)
@@ -41,9 +43,10 @@ const handle_gerant = (bool, val) => {
     @update:change_current_page="change_current_page"/>
     <Connection v-if="page == 'Connection'" @update:handle_client="handle_client" 
     @update:change_current_page="change_current_page"/>
+    <Louer v-if="page == 'Louer'"/>
     <ConnectionGerant v-if="page == 'ConnectionGerant'" @update:handle_gerant="handle_gerant" 
     @update:change_current_page="change_current_page"/>
-    <BicycleCard v-if="page == 'BicycleCard'" :id=id_velo></BicycleCard>
+    <BicycleList v-if="page == 'ListeVelos'"></BicycleList>
   </main>
 </template>
 
