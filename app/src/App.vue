@@ -3,39 +3,44 @@ import { ref } from 'vue'
 import Connection from './components/Connection.vue'
 import NavBar from './components/commons/NavBar.vue'
 import BicycleInfos from './components/BicycleInfos.vue'
+import ConnectionGerant from './components/ConnectionGerant.vue'
 
-const estConnecte = ref(false)
-const isGerant = ref(false)
-const idClient = ref(null);
-const idGerant = ref(null);
+const is_connected = ref(false)
+const is_gerant = ref(false)
+const id_client = ref(null);
+const id_gerant = ref(null);
 const page = ref('Connection');
+const id_velo = ref(3);
 
-const changeCurrentPage = (newPage) => {
+const change_current_page = (newPage) => {
   page.value = newPage;
 }
 
-const handleConnecte = (bool, val) => {
+const handle_client = (bool, val) => {
   console.log("handleConnection");
-  estConnecte.value = bool;
-  idClient.value = val;
+  is_connected.value = bool;
+  id_client.value = val;
 }
 
-const handleGerant = (bool, val) => {
-  isGerant.value = bool;
-  idGerant.value = val;
+const handle_gerant = (bool, val) => {
+  is_gerant.value = bool;
+  is_connected.value = bool;
+  id_gerant.value = val;
 }
 
 </script>
 
 <template>
   <header>
-    <NavBar current_page=page :is_gerant=isGerant :est_connecte=estConnecte @update:changeCurrentPage="changeCurrentPage"></NavBar>
+    <NavBar current_page=page :is_gerant=is_gerant :is_connected=is_connected @update:change_current_page="change_current_page"></NavBar>
   </header>
 
   <main>
-    <Connection v-if="page == 'Connection'" @update:estConnecte="handleConnecte" 
-    @update:isGerant="handleGerant" @update:changeCurrentPage="changeCurrentPage"/>
-    <BicycleInfos :id="3"></BicycleInfos>
+    <Connection v-if="page == 'Connection'" @update:handle_client="handle_client" 
+    @update:change_current_page="change_current_page"/>
+    <ConnectionGerant v-if="page == 'ConnectionGerant'" @update:handle_gerant="handle_gerant" 
+    @update:change_current_page="change_current_page"/>
+    <BicycleCard v-if="page == 'BicycleCard'" :id=id_velo></BicycleCard>
   </main>
 </template>
 
