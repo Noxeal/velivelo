@@ -1,73 +1,85 @@
-<script setup>
-const props = defineProps({
-  current_page: {
-    type: String,
-    required: true,
+<script>
+export default {
+  props: {
+    current_page: {
+      type: String,
+      required: true
+    },
+    is_gerant: {
+      type: Boolean,
+      required: true
+    },
+    is_connected: {
+      type: Boolean,
+      required: true
+    }
   },
-  is_gerant: {
-    type: Boolean,
-    required: true,
+  emits: ['update:change_current_page'],
+  data() {
+    return {
+      all_pages: [
+        { component: 'Louer', label: 'Louer', gerant_only: false },
+        { component: 'ListeLocations', label: 'Liste des locations', gerant_only: false },
+        { component: 'ListeVelos', label: 'Liste des vélos', gerant_only: false },
+        { component: 'ListeClients', label: 'Liste des clients', gerant_only: true }
+      ],
+      account_pages: [
+        { component: 'Compte', label: 'Mon Compte', gerant_only: false },
+        { component: 'Deconnexion', label: 'Déconnexion', gerant_only: false }
+      ],
+      disconnected_pages: [
+        { component: 'Connection', label: 'Se connecter', gerant_only: false }
+      ]
+    }
   },
-  is_connected: {
-    type: Boolean,
-    required: true,
+  methods: {
+    changePage(page) {
+      this.$emit('update:change_current_page', page)
+    }
   }
-})
-
-let all_pages = [
-    { component: 'Louer', label: 'Louer', gerant_only: false },
-    { component: 'ListeLocations', label: 'Liste des locations', gerant_only: false },
-    { component: 'ListeVelos', label: 'Liste des vélos', gerant_only: false },
-    { component: 'ListeClients', label: 'Liste des clients', gerant_only: true },
-]
-
-let account_pages = [
-    { component: 'Compte', label: 'Mon Compte', gerant_only: false },
-    { component: 'Deconnexion', label: 'Déconnexion', gerant_only: false },
-]
-
-let disconnected_pages = [
-    { component: 'Connection', label: 'Se connecter', gerant_only: false },
-]
+}
 </script>
 
 <template>
-    <nav>  
-        <div class="buttons_pages">
-            <button 
-                v-for="page in all_pages" 
-                v-show="is_gerant || !page.gerant_only" 
-                :class="current_page === page.component ? 'active' : ''"
-                onclick="$emit('change_page', page.component)"
-                >
-                        {{ page.label }}
-            </button>
-        </div>
+  <nav>
+    <div class="buttons_pages">
+      <button 
+        v-for="page in all_pages" 
+        :key="page.component"
+        v-show="is_gerant || !page.gerant_only" 
+        :class="current_page === page.component ? 'active' : ''"
+        @click="changePage(page.component)"
+      >
+        {{ page.label }}
+      </button>
+    </div>
 
-      <div class="buttons_account" v-if="is_connected">
-        <button 
-            v-for="page in account_pages" 
-            v-show="is_gerant || !page.gerant_only" 
-            :class="current_page === page.component ? 'active' : ''"
-            onclick="$emit('change_page', page.component)"
-            >
-                    {{ page.label }}
-        </button>
-      </div>
+    <div class="buttons_account" v-if="is_connected">
+      <button 
+        v-for="page in account_pages" 
+        :key="page.component"
+        v-show="is_gerant || !page.gerant_only" 
+        :class="current_page === page.component ? 'active' : ''"
+        @click="changePage(page.component)"
+      >
+        {{ page.label }}
+      </button>
+    </div>
 
-      <div v-else>
-        <button 
-            v-for="page in disconnected_pages" 
-            v-show="is_gerant || !page.gerant_only" 
-            :class="current_page === page.component ? 'active' : ''"
-            onclick="$emit('change_page', page.component)"
-            >
-                    {{ page.label }}
-        </button>
-      </div>
-      
-    </nav>
-  </template>
+    <div v-else>
+      <button 
+        v-for="page in disconnected_pages" 
+        :key="page.component"
+        v-show="is_gerant || !page.gerant_only" 
+        :class="current_page === page.component ? 'active' : ''"
+        @click="changePage(page.component)"
+      >
+        {{ page.label }}
+      </button>
+    </div>
+  </nav>
+</template>
+
   
 
 <style scoped>

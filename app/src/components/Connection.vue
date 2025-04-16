@@ -2,6 +2,8 @@
   <div class="login-container">
     <h1 class="title">Se Connecter</h1>
 
+    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
     <div class="input-row">
       <label for="email">Email :</label>
       <input id="email" v-model="email" />
@@ -14,7 +16,7 @@
 
     <button class="btn-connection" @click="connection">Se connecter</button>
     <a class="link">Créer un compte</a>
-    <a @click=changePageToGerant class="link">Se connecter en tant que Gérant</a>
+    <a @click="changePageToGerant" class="link">Se connecter en tant que Gérant</a>
   </div>
 </template>
 
@@ -23,7 +25,8 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      errorMessage: "" // pour afficher une erreur
     }
   },
   methods: {
@@ -31,6 +34,7 @@ export default {
       this.$emit('update:change_current_page', 'ConnectionGerant');
     },
     async connection() {
+      this.errorMessage = ""; // Réinitialiser le message d'erreur
       try {
         const response = await fetch("http://localhost:3000/se_connecter", {
           method: "POST",
@@ -50,11 +54,16 @@ export default {
         const json = await response.json()
         console.log("Réponse du serveur :", json)
 
-        // Émettre les événements vers le parent
-        this.$emit('update:handle_client', true, json.id_client);
+        if (!json || !json.id_client) {
+          this.errorMessage = "Identifiants incorrects.";
+          return;
+        }
 
+        this.$emit('update:handle_client', true, json.id_client);
+        this.$emit('update:change_current_page', 'Liste_velos');
       } catch (error) {
         console.error("Erreur de connexion :", error)
+        this.errorMessage = "Erreur lors de la connexion. Veuillez réessayer.";
       }
     }
   },
@@ -80,6 +89,15 @@ export default {
 .title {
   text-align: center;
   font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.error-message {
+  background-color: #ffe5e5;
+  color: #c0392b;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
   margin-bottom: 10px;
 }
 
