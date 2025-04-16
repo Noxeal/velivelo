@@ -1,14 +1,20 @@
 <template>
-  <div>
-    <div class="email_row">
-      <label for="email">Email : </label>
+  <div class="login-container">
+    <h1 class="title">Se Connecter</h1>
+
+    <div class="input-row">
+      <label for="email">Email :</label>
       <input id="email" v-model="email" />
     </div>
-    <div class="password_row">
-      <label for="password">Mot de passe : </label>
-      <input id="password" type="password" v-model="password"/>
+
+    <div class="input-row">
+      <label for="password">Mot de passe :</label>
+      <input id="password" type="password" v-model="password" />
     </div>
-    <button @click="connection">Se connecter</button>
+
+    <button class="btn-connection" @click="connection">Se connecter</button>
+    <a class="link">Créer un compte</a>
+    <a class="link">Se connecter en tant que Gérant</a>
   </div>
 </template>
 
@@ -17,8 +23,9 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
-    };
+      password: "",
+      id_client: "",
+    }
   },
   methods: {
     async connection() {
@@ -32,25 +39,90 @@ export default {
             email: this.email,
             password: this.password
           })
-        });
+        })
 
         if (!response.ok) {
-          throw new Error(`Erreur HTTP : ${response.status}`);
+          throw new Error(`Erreur HTTP : ${response.status}`)
         }
 
-        const json = await response.json();
-        console.log("Réponse du serveur :", json);
+        const json = await response.json()
+        console.log("Réponse du serveur :", json)
+
+        // Émettre les événements vers le parent
+        this.$emit('update:estConnecte', true, json.id_client);
+        
       } catch (error) {
-        console.error("Erreur de connexion :", error);
+        console.error("Erreur de connexion :", error)
       }
     }
-  }
-};
+  },
+  emits: ['update:estConnecte', 'update:isGerant']
+}
 </script>
 
-<style>
-.email_row,
-.password_row {
+<style scoped>
+.login-container {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  margin: 90px auto 70px;
+  padding: 30px;
+  background-color: #f7f9fc;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  gap: 15px;
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--color-dark-blue);
+}
+
+.title {
+  text-align: center;
+  font-size: 24px;
   margin-bottom: 10px;
+}
+
+.input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input-row label {
+  font-weight: 600;
+}
+
+.input-row input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.btn-connection {
+  background-color: var(--color-soft-blue);
+  color: var(--color-beige);
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 16px;
+}
+
+.btn-connection:hover {
+  background-color: var(--color-dark-blue);
+}
+
+.link {
+  text-align: center;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var();
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: var(--color-soft-blue);
 }
 </style>
