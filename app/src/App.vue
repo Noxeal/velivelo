@@ -37,12 +37,11 @@ const handle_gerant = (bool, val) => {
   </header>
 
   <main>
-    <!-- <Connection v-if="page == 'Connection'" @update:handle_client="handle_client" 
+    <Connection v-if="page == 'Connection'" @update:handle_client="handle_client" 
     @update:change_current_page="change_current_page"/>
     <ConnectionGerant v-if="page == 'ConnectionGerant'" @update:handle_gerant="handle_gerant" 
     @update:change_current_page="change_current_page"/>
-    <BicycleCard v-if="page == 'BicycleCard'" :id=id_velo></BicycleCard> -->
-    <BicycleList></BicycleList>
+    <BicycleList v-if="page == 'ListeVelos'"></BicycleList>
   </main>
 </template>
 
