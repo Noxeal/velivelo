@@ -50,15 +50,18 @@ app.get('/client/:id', async (req, res)=>{
 app.post('/client/', async (req, res) => {
 	const { fname, surname, email, password } = req.body;
 	try {
-	  const clients = await db.query(
-		`INSERT INTO Client (prenom, nom, email, mot_de_passe) VALUES ($1, $2, $3, $4);`,
-		[fname, surname, email, password]
-	  );
-	res.send(clients.rows[0]);
+		const clients = await db.query(`INSERT INTO Client (prenom, nom, email, mot_de_passe) VALUES ($1, $2, $3, $4) RETURNING id;`,[fname, surname, email, password]);
+		res.send(clients.rows[0]);
+		  
 	} catch (err) {
-	  console.error(err);
-	  res.status(500).send('Erreur lors de la création du client');
-	}
+		console.log(err.code);
+		if (err.code === '23505') {
+			res.status(400).send('Cet email est déjà utilisé.');
+		  } else {
+			res.status(500).send('Erreur lors de la création du client');
+		  }
+		}
+	
 });
 
 app.put('/client/update_nom/:id', async (req, res)=> {
