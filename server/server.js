@@ -50,15 +50,22 @@ app.get('/client/:id', async (req, res)=>{
 app.post('/client/', async (req, res) => {
 	const { fname, surname, email, password } = req.body;
 	try {
-	  const clients = await db.query(
-		`INSERT INTO Client (prenom, nom, email, mot_de_passe) VALUES ($1, $2, $3, $4);`,
-		[fname, surname, email, password]
-	  );
-	res.send(clients.rows[0]);
+		const clients = await db.query(`INSERT INTO Client (prenom, nom, email, mot_de_passe) VALUES ($1, $2, $3, $4) RETURNING id;`,[fname, surname, email, password]);
+		res.send({
+			id_client: clients.rows[0].id,
+			success: true,
+			message: "Connexion réussie !",
+		});
+		  
 	} catch (err) {
-	  console.error(err);
-	  res.status(500).send('Erreur lors de la création du client');
-	}
+		console.log(err.code);
+		if (err.code === '23505') {
+			res.status(400).send('Cet email est déjà utilisé.');
+		  } else {
+			res.status(500).send('Erreur lors de la création du client');
+		  }
+		}
+	
 });
 
 app.put('/client/update_nom/:id', async (req, res)=> {
@@ -85,8 +92,6 @@ app.delete('/client/:id', async (req, res)=> {
 	await db.query(`DELETE FROM Client where id = ${req.params.id};`) 
 	res.send("ça marche !");
 });
-
-// Se connecter
 
 app.post('/se_connecter', async (req, res) => {
 	let account = req.body;
@@ -291,10 +296,41 @@ app.get('/location/', async (req, res)=>{
 	res.send(locations.rows);
 });
 
+app.get('/location_list/', async (req, res)=>{
+	let locations = await db.query('SELECT Location.id as id_location, Velo.id as id_velo, Velo.nom as nom_velo, Client.id as id_client, Client.nom, Client.prenom, Velo.Etat, date_debut, date_fin_estimee FROM Location JOIN Client ON Location.id_client = Client.id JOIN Velo ON Location.id_velo = Velo.id;');
+	res.send(locations.rows);
+})
+
 app.get('/location/:id', async (req, res)=>{
 	let location = await db.query(`SELECT * FROM Location where id = ${req.params.id};`) 
 	res.send(location.rows[0]);
 });
+
+app.put('/location/:id', async (req, res) => {
+	const id = req.params.id;
+	const { date_debut, date_fin_estimee } = req.body;
+  
+	if (!date_debut || !date_fin_estimee) {
+	  return res.status(400).send({ message: 'Champs date_debut et date_fin_estimee requis.' });
+	}
+  
+	try {
+	  const result = await db.query(
+		`UPDATE Location SET date_debut = $1, date_fin_estimee = $2 WHERE id = $3 RETURNING *;`,
+		[date_debut, date_fin_estimee, id]
+	  );
+  
+	  if (result.rowCount === 0) {
+		return res.status(404).send({ message: 'Location non trouvée.' });
+	  }
+  
+	  res.status(200).send({ message: 'Location mise à jour avec succès.', location: result.rows[0] });
+	} catch (error) {
+	  console.error('Erreur mise à jour location :', error);
+	  res.status(500).send({ message: 'Erreur serveur.' });
+	}
+  });
+  
 
 app.put('/location/update_date_debut/:id', async (req, res)=>{
 	let location = await db.query(`UPDATE Client SET date_debut = ${req.body} where id = ${req.params.id} ;`) 
