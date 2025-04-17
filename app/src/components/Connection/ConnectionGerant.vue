@@ -31,7 +31,7 @@ export default {
     },
     async connection() {
       try {
-        const response = await fetch("http://localhost:3000/se_connecter", {
+        const response = await fetch("http://localhost:3000/se_connecter_gerant", {
           method: "POST",
           headers: {
             "Content-Type": "application/json; charset=UTF-8"
@@ -50,8 +50,8 @@ export default {
         console.log("Réponse du serveur :", json)
 
         // Émettre les événements vers le parent
-        this.$emit('update:handle_gerant', true, json.id_client);
-
+        this.$emit('update:handle_gerant', true, json.id_gerant);
+        this.$emit('update:change_current_page', 'ListeVelos');
       } catch (error) {
         console.error("Erreur de connexion :", error)
       }

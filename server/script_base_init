@@ -6,7 +6,7 @@ DROP TABLE if exists Gerant;
 DROP TABLE if exists Velo;
 
 CREATE TABLE Client(
-	id INTEGER PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	prenom VARCHAR(50) NOT NULL,
 	nom VARCHAR(50) NOT NULL,
 	email VARCHAR(100) NOT NULL,
