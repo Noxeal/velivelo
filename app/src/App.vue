@@ -3,17 +3,18 @@ import { ref } from 'vue'
 import Connection from './components/Connection/Connection.vue'
 import NavBar from './components/commons/NavBar.vue'
 import ConnectionGerant from './components/Connection/ConnectionGerant.vue'
-import Inscription from './components/Inscription.vue'
+import Inscription from './components/Connection/Inscription.vue'
 import BicycleCard from './components/commons/BicycleCard.vue'
 import Louer from './components/Connection/Louer.vue'
 import BicycleList from './components/BicycleList.vue'
 import LocationsList from './components/LocationsList.vue'
+import Compte from './components/Compte.vue'
 
 const is_connected = ref(false)
 const is_gerant = ref(false)
 const id_client = ref(null);
 const id_gerant = ref(null);
-const page = ref('Inscription');
+const page = ref('Compte');
 const id_velo = ref(3);
 
 const change_current_page = (newPage) => {
@@ -41,6 +42,8 @@ const handle_gerant = (bool, val) => {
 
   <main>
     <Inscription v-if="page == 'Inscription'" @update:handle_client="handle_client" 
+    @update:change_current_page="change_current_page" />
+    <Compte v-if="page == 'Compte'" :id_client=id_client
     @update:change_current_page="change_current_page"/>
     <Connection v-if="page == 'Connection'" @update:handle_client="handle_client" 
     @update:change_current_page="change_current_page"/>
