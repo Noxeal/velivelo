@@ -73,7 +73,7 @@ const handle_gerant = (bool, val) => {
     <LocationsList v-if="page == 'ListeLocations'" :id_client="id_client" :is_gerant="is_gerant" />
 
     <ClientsList v-if="page == 'ListeClients'"></ClientsList>
-    <Compte v-if="page == 'Compte'" :id_client=id_client :id_gerant= id_gerant :is_gerant="is_gerant"
+    <Compte v-if="page == 'Compte'" :id_client=id_client :id_gerant= id_gerant :is_gerant=is_gerant
     @update:change_current_page="change_current_page"/>
   </main>
 </template>

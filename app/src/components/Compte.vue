@@ -11,8 +11,8 @@ export default {
             required: true
         },
         is_gerant: {
-            type: Number,
-            required: true
+            type: Boolean,
+            default: false
         }
     },
   data() {
@@ -26,8 +26,10 @@ export default {
   },
   async created() {
   if (this.is_gerant) {
+    console.log(this.is_gerant)
     await this.fetchGerant();
   } else {
+    console.log(this.is_gerant)
     await this.fetchUser();
   }
 },
@@ -54,6 +56,7 @@ export default {
     },
     async fetchGerant() {
     try {
+        console.log('blabla');
         console.log("ID du gérant utilisé :", this.id_gerant);
         const response = await fetch(`http://localhost:3000/gerant/${this.id_gerant}`);
         if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
