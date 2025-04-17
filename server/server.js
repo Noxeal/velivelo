@@ -299,7 +299,7 @@ app.post('/velos_disponibles/date', async (req, res)=>{
 	if (idsNonDispo.length > 0) {
 		const placeholders = idsNonDispo.map((_, i) => `$${i + 1}`).join(',');
 		velos = await db.query(
-		`SELECT * FROM Velo WHERE id NOT IN (${placeholders})`,
+		`SELECT * FROM Velos_disponibles WHERE id NOT IN (${placeholders})`,
 		[...idsNonDispo]  // ⬅️ PAS de "date" ici !
 		);
 	} else {
@@ -327,11 +327,11 @@ app.post('/velos_disponibles/double_dates', async (req, res)=>{
 		if (idsNonDispo.length > 0) {
 			const placeholders = idsNonDispo.map((_, i) => `$${i + 1}`).join(',');
 			velos = await db.query(
-				`SELECT * FROM Velo WHERE id NOT IN (${placeholders})`,
+				`SELECT * FROM Velos_disponibles WHERE id NOT IN (${placeholders})`,
 				[...idsNonDispo]
 			);
 		} else {
-			velos = await db.query(`SELECT * FROM Velo`);
+			velos = await db.query(`SELECT * FROM Velos_disponibles`);
 		}
 		res.send(velos.rows);
 	} catch (error) {
@@ -418,6 +418,35 @@ app.get('/location/:id', async (req, res)=>{
 	let location = await db.query(`SELECT * FROM Location where id = ${req.params.id};`) 
 	res.send(location.rows[0]);
 });
+
+app.post('/location', async (req, res) => {
+	const { date_debut, date_fin, id_velo, id_client } = req.body;
+	console.log("date debut :", date_debut);
+	console.log("date fin :", date_fin);
+	console.log("id velo :", id_velo);
+	console.log("id client :", id_client);
+	try {
+	  const result = await db.query(
+		`INSERT INTO Location (date_debut, date_fin_estimee, paiement_actuel, id_velo, id_client, etat)
+		 VALUES ($1, $2, $3, $4, $5, $6)
+		 RETURNING id;`,
+		[date_debut, date_fin, 0.0, id_velo, id_client, "En Cours"]
+	  );
+  
+	  res.send({
+		id_location: result.rows[0].id,
+		success: true,
+		message: "Location enregistrée avec succès !",
+	  });
+	} catch (err) {
+	  console.error(err);
+	  if (err.code === '23505') {
+		res.status(400).send('Doublon détecté.');
+	  } else {
+		res.status(500).send('Erreur lors de la création de la location');
+	  }
+	}
+  });
 
 app.put('/location/:id', async (req, res) => {
 	const id = req.params.id;
