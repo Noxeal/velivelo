@@ -15,7 +15,7 @@
     </div>
 
     <button class="btn-connection" @click="connection">Se connecter</button>
-    <a class="link">Créer un compte</a>
+    <a @click="changePageToInscript" class="link">Créer un compte</a>
     <a @click="changePageToGerant" class="link">Se connecter en tant que Gérant</a>
   </div>
 </template>
@@ -32,6 +32,9 @@ export default {
   methods: {
     changePageToGerant() {
       this.$emit('update:change_current_page', 'ConnectionGerant');
+    },
+    changePageToInscript(){
+      this.$emit('update:change_current_page', 'Inscription');
     },
     async connection() {
       this.errorMessage = ""; // Réinitialiser le message d'erreur
@@ -60,7 +63,7 @@ export default {
         }
 
         this.$emit('update:handle_client', true, json.id_client);
-        this.$emit('update:change_current_page', 'Liste_velos');
+        this.$emit('update:change_current_page', 'ListeVelos');
       } catch (error) {
         console.error("Erreur de connexion :", error)
         this.errorMessage = "Erreur lors de la connexion. Veuillez réessayer.";
