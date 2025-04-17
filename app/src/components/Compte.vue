@@ -5,6 +5,14 @@ export default {
         id_client: {
             type: Number,
             required: true
+        },
+        id_gerant: {
+            type: Number,
+            required: true
+        },
+        is_gerant: {
+            type: Number,
+            required: true
         }
     },
   data() {
@@ -17,8 +25,12 @@ export default {
     };
   },
   async created() {
+  if (this.is_gerant) {
+    await this.fetchGerant();
+  } else {
     await this.fetchUser();
-  },
+  }
+},
   methods: {
     async fetchUser() {
       try {
@@ -40,6 +52,20 @@ export default {
         this.errorMessage = "Impossible de charger les données.";
       }
     },
+    async fetchGerant() {
+    try {
+        console.log("ID du gérant utilisé :", this.id_gerant);
+        const response = await fetch(`http://localhost:3000/gerant/${this.id_gerant}`);
+        if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
+        const data = await response.json();
+        this.user = data;
+        this.editedUser = { ...data };
+    } catch (error) {
+        console.error("Erreur lors de la récupération du compte gérant :", error);
+        this.errorMessage = "Impossible de charger les données.";
+    }
+    }
+    ,
     toggleEdit() {
       if (this.isEditing) {
         this.editedUser = { ...this.user };
@@ -61,11 +87,9 @@ export default {
         });
 
         if (!response.ok) {
-            console.log("Whsitle");
           const msg = await response.text();
           this.errorMessage = msg || 'Erreur lors de la mise à jour';
         } else {
-            console.log("Mario");
           this.user = { ...this.editedUser };
           this.isEditing = false;
           this.successMessage = 'Modifications enregistrées !';
@@ -74,7 +98,35 @@ export default {
       } catch (err) {
         this.errorMessage = 'Erreur lors de la sauvegarde.';
       }
+    },
+    async deleteAccount() {
+    if (confirm("Êtes-vous sûr de vouloir supprimer votre compte ?")) {
+      try {
+        const response = await fetch(`http://localhost:3000/client/${this.id_client}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          // Si la suppression échoue
+          this.errorMessage = result.message || "Erreur lors de la suppression du compte.";
+        } else {
+          this.successMessage = result.message;
+          this.errorMessage = '';
+
+          this.$emit('update:change_current_page', 'Connection');
+        }
+      } catch (error) {
+        console.error("Erreur de suppression :", error);
+        this.errorMessage = "Erreur lors de la suppression du compte.";
+      }
     }
+  }
+
   }
 };
 </script>
@@ -116,8 +168,9 @@ export default {
       <p v-if="successMessage" class="success">{{ successMessage }}</p>
     </div>
 
-    <button v-if="!isEditing" @click="toggleEdit">Modifier</button>
-    <button v-else @click="saveChanges">Enregistrer</button>
+    <button v-if="!isEditing && !is_gerant" @click="toggleEdit">Modifier</button>
+    <button v-else-if="!is_gerant" @click="saveChanges">Enregistrer</button>
+    <button v-if="!is_gerant" @click="deleteAccount">Supprimer mon compte</button>
   </div>
 
   <div v-else class="loading">Chargement du compte...</div>

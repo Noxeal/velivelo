@@ -96,26 +96,34 @@ app.put('/client/:id', async (req, res) => {
   
 // Suppression d’un client
 app.delete('/client/:id', async (req, res) => {
-	const id = req.params.id;
-
 	try {
-		const result = await db.query(
-		`DELETE FROM Client
-				WHERE id = $1
-			RETURNING *;`,
-		[id]
-		);
-
-		if (result.rowCount === 0) {
-		return res.status(404).send({ message: 'Client non trouvé.' });
-		}
-
-		res.status(200).send({ message: 'Client supprimé avec succès.' });
-	} catch (err) {
-		console.error('Erreur suppression client :', err);
-		res.status(500).send({ message: 'Erreur serveur lors de la suppression.' });
+	  const { id } = req.params;
+  
+	  // Vérifier si le client a des locations en cours
+	  const resultLocation = await db.query('SELECT COUNT(*) FROM Location WHERE id_client = $1', [id]);
+  
+	  if (parseInt(resultLocation.rows[0].count) > 0) {
+		// Le client a des locations, on ne permet pas la suppression
+		return res.status(400).send({
+		  success: false,
+		  message: 'Impossible de supprimer le compte, il a des locations en cours.'
+		});
+	  }
+  
+	  // Si le client n'a pas de location, on peut le supprimer
+	  const result = await db.query('DELETE FROM Client WHERE id = $1', [id]);
+  
+	  if (result.rowCount === 0) {
+		return res.status(404).send({ success: false, message: 'Client non trouvé' });
+	  }
+  
+	  res.send({ success: true, message: 'Client supprimé avec succès' });
+	} catch (error) {
+	  console.error("Erreur de suppression :", error);
+	  res.status(500).send({ success: false, message: 'Erreur lors de la suppression du client' });
 	}
-});
+  });
+  
 
 
 app.post('/client/', async (req, res) => {
@@ -260,6 +268,7 @@ app.get('/gerant/', async (req, res)=>{
 });
 
 app.get('/gerant/:id', async (req, res)=>{
+	console.log(req.params.id);
 	let clients = await db.query(`SELECT * FROM Gerant where id = ${req.params.id};`) 
 	res.send(clients.rows[0]);
 });
