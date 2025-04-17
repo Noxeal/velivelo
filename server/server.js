@@ -51,7 +51,11 @@ app.post('/client/', async (req, res) => {
 	const { fname, surname, email, password } = req.body;
 	try {
 		const clients = await db.query(`INSERT INTO Client (prenom, nom, email, mot_de_passe) VALUES ($1, $2, $3, $4) RETURNING id;`,[fname, surname, email, password]);
-		res.send(clients.rows[0]);
+		res.send({
+			id_client: clients.rows[0].id,
+			success: true,
+			message: "Connexion réussie !",
+		});
 		  
 	} catch (err) {
 		console.log(err.code);
@@ -88,8 +92,6 @@ app.delete('/client/:id', async (req, res)=> {
 	await db.query(`DELETE FROM Client where id = ${req.params.id};`) 
 	res.send("ça marche !");
 });
-
-// Se connecter
 
 app.post('/se_connecter', async (req, res) => {
 	let account = req.body;

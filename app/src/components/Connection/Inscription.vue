@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 
-const emit = defineEmits('update:change_current_page');
+const emit = defineEmits(['update:change_current_page','update:handle_client']);
 
 const fname = ref('');
 const surname = ref('');
@@ -45,7 +45,8 @@ const onSubmit = async () => {
     } else {
       const data = await response.json();
       console.log("Client créé :", data);
-      emit('update:change_current_page', 'Liste_velos');
+      emit('update:change_current_page', 'ListeVelos');
+      emit('update:handle_client', true, data.id_client);
     }
 
   } catch (error) {
@@ -66,13 +67,13 @@ const onSubmit = async () => {
     </div>
 
     <div class="input-row">
-    <label for="surname">Surname :</label><br>
-    <input type="text" id="surname" v-model="surname" required><br>
+    <label for="fname">First Name :</label><br>
+    <input type="text" id="fname" v-model="fname" required><br>
     </div>
 
     <div class="input-row">
-    <label for="fname">First Name :</label><br>
-    <input type="text" id="fname" v-model="fname" required><br>
+    <label for="surname">Surname :</label><br>
+    <input type="text" id="surname" v-model="surname" required><br>
     </div>
 
     <div class="input-row">
