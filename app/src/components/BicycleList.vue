@@ -20,7 +20,6 @@
         </div>
 </template>
 
-  
   <script>
   import BicycleCard from './commons/BicycleCard.vue';
   
@@ -85,7 +84,10 @@
     width: calc(25% - 20px);
     margin: 10px;
     height: 300px;
-
+  }
+  
+  .bicycle-card-wrapper:hover {
+    transform: scale(1.05);
   }
   
   /* Modale */
