@@ -7,6 +7,12 @@ export default {
     BicycleCard,
     Datepicker
   },  
+  props:{
+    id_client:{
+      typeof: Number,
+      required : true
+    }
+  },  
   data() {
     return {
       date_debut: null,
@@ -49,6 +55,7 @@ export default {
       }
     }
   },
+  emits: ['update:change_current_page'],
   methods: {
     selectVelo(id) {
       if(this.velo == id){
@@ -118,7 +125,7 @@ export default {
     },
     async loue() {
       try {
-        const response = await fetch("http://localhost:3000/louer", {
+        const response = await fetch("http://localhost:3000/location", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -126,7 +133,8 @@ export default {
           body: JSON.stringify({
             date_debut: this.date_debut,
             date_fin: this.date_fin,
-            id_velo: this.velo
+            id_velo: this.velo,
+            id_client: this.id_client
           })
         })
 
@@ -135,14 +143,11 @@ export default {
           throw new Error(errorText || `Erreur HTTP : ${response.status}`)
         }
 
-        const json = await response.json()
-        this.message = "Location enregistrée avec succès !"
-        this.success = true
-
         // Optionnel : reset des champs
         this.date_debut = ""
         this.date_fin = ""
         this.velo = ""
+        this.$emit('update:change_current_page', 'ListeVelos');
 
       } catch (error) {
         console.error("Erreur lors de la location :", error)
@@ -175,6 +180,14 @@ export default {
         v-model="date_fin" 
         :disabled-date="isDisabled" 
       />
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+      <button 
+        :disabled="!date_debut || !date_fin || !velo" 
+        @click="loue"
+        style="padding: 10px 20px; font-size: 16px; background-color: #42b983; color: white; border: none; border-radius: 5px; cursor:pointer"
+      > Louer
+      </button>
     </div>
     <div class="bicycles-grid">
       <div
@@ -231,6 +244,11 @@ export default {
 
 .input-row label {
   font-weight: 600;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .input-row input {

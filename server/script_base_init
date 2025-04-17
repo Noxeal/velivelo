@@ -36,7 +36,7 @@ CREATE TABLE Velo(
 );
 
 CREATE TABLE Location(
-	id INTEGER PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	etat VARCHAR(50) NOT NULL,
 	date_debut DATE NOT NULL,
 	date_fin_estimee DATE NOT NULL CHECK (date_fin_estimee > date_debut),

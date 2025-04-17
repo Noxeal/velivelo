@@ -1,11 +1,6 @@
 <template>
   <div class="bicycle-list">
-    <div
-      v-for="bicycle in bicycle_list"
-      :key="bicycle.id"
-      @click="openModal(bicycle.id)"
-      class="bicycle-card-wrapper"
-    >
+    <div v-for="bicycle in bicycle_list" :key="bicycle.id" @click="openModal(bicycle.id)" class="bicycle-card-wrapper">
       <BicycleCard :id="bicycle.id" :is_list_element="true" />
     </div>
 
