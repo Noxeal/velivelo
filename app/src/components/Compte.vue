@@ -49,7 +49,7 @@ export default {
     async saveChanges() {
       try {
         console.log("Mot de passe actuel :", this.editedUser.old_password);
-        const response = await fetch(`http://localhost:3000/client/${this.id_client}`, {
+        const response = await fetch(`http://localhost:3000/compte/${this.id_client}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'

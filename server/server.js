@@ -134,7 +134,8 @@ app.post('/client/', async (req, res) => {
 	
 });
 
-app.put('/client/:id', async (req, res) => {
+app.put('/compte/:id', async (req, res) => {
+	console.log("too far");
 	const { nom, prenom, email, mot_de_passe, old_password } = req.body;
 	const id = req.params.id;
 	console.log(old_password);

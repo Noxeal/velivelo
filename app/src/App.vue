@@ -9,6 +9,7 @@ import Louer from './components/Louer.vue'
 import BicycleList from './components/BicycleList.vue'
 import LocationsList from './components/LocationsList.vue'
 import ClientsList from './components/ClientsList.vue'
+import Compte from './components/Compte.vue'
 
 const is_connected = ref(false)
 const is_gerant = ref(false)
