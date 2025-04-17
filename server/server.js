@@ -140,7 +140,6 @@ app.post('/client/', async (req, res) => {
 });
 
 app.put('/compte/:id', async (req, res) => {
-	console.log("too far");
 	const { nom, prenom, email, mot_de_passe, old_password } = req.body;
 	const id = req.params.id;
 	console.log(old_password);
@@ -484,6 +483,35 @@ app.get('/location_list/', async (req, res)=>{
 	res.send(locations.rows);
 })
 
+app.get('/location_list/client/:id', async (req, res) => {
+	const clientId = req.params.id;
+	  
+	try {
+	  const locations = await db.query(
+		`SELECT 
+		  Location.id as id_location, 
+		  Velo.id as id_velo, 
+		  Velo.nom as nom_velo, 
+		  Client.id as id_client, 
+		  Client.nom, 
+		  Client.prenom, 
+		  Velo.Etat, 
+		  date_debut, 
+		  date_fin_estimee 
+		FROM Location 
+		JOIN Client ON Location.id_client = Client.id 
+		JOIN Velo ON Location.id_velo = Velo.id 
+		WHERE Client.id = $1;`,
+		[clientId]
+	  );
+  
+	  res.send(locations.rows);
+	} catch (err) {
+	  console.error('Erreur lors de la récupération des locations du client :', err);
+	  res.status(500).send('Erreur serveur');
+	}
+});
+  
 app.get('/location/:id', async (req, res)=>{
 	let location = await db.query(`SELECT * FROM Location where id = ${req.params.id};`) 
 	res.send(location.rows[0]);

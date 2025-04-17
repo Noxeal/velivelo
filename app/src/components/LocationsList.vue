@@ -62,8 +62,8 @@
         <div class="location-actions">
           <button @click="openClientModal(location.id_client)">👤</button>
           <button @click="openVeloModal(location.id_velo)">🚲</button>
-          <button @click="openEditModal(location)">✏️</button>
-          <button @click="openDeleteModal(location.id_location)">🗑️</button>
+          <button v-if="is_gerant" @click="openEditModal(location)">✏️</button>
+          <button v-if="is_gerant" @click="openDeleteModal(location.id_location)">🗑️</button>
         </div>
       </div>
   
@@ -130,6 +130,17 @@
   
   export default {
     components: { BicycleCard, ClientCard, Modal },
+    props: {
+        is_gerant: {
+            type: Boolean,
+            default: false
+        },
+        id_client: {
+            type: Number,
+            default: null
+        }
+    },
+
     data() {
       return {
         locations_list: [],
@@ -162,16 +173,24 @@
       await this.fetchLocations();
     },
     methods: {
-      async fetchLocations() {
-        try {
-          const res = await fetch('http://localhost:3000/location_list/');
-          if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
-          const data = await res.json();
-          if (Array.isArray(data)) this.locations_list = data;
-        } catch (err) {
-          console.error('Erreur récupération locations :', err);
-        }
-      },
+        async fetchLocations() {
+  try {
+    let url = '';
+
+    if (this.is_gerant) {
+      url = 'http://localhost:3000/location_list/';
+    } else if (this.id_client !== null) {
+      url = `http://localhost:3000/location_list/client/${this.id_client}`;
+    }
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
+    const data = await res.json();
+    if (Array.isArray(data)) this.locations_list = data;
+  } catch (err) {
+    console.error('Erreur récupération locations :', err);
+  }
+},
       formatDate(dateStr) {
         return new Date(dateStr).toLocaleDateString('fr-FR');
       },
