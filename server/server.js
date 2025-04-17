@@ -47,6 +47,72 @@ app.get('/client/:id', async (req, res)=>{
 	res.send(clients.rows[0]);
 });
 
+// Mise à jour d’un client (nom, prénom et email)
+app.put('/client/:id', async (req, res) => {
+	const id = req.params.id;
+	const { nom, prenom, email } = req.body;
+
+	// console.log('Mise à jour du client avec ID:', id);
+	// console.log('Nouveau nom:', nom);
+	// console.log('Nouveau prénom:', prenom);
+	// console.log('Nouvel email:', email);
+
+  
+	// Vérification minimale
+	if (!nom || !prenom || !email) {
+	  return res
+		.status(400)
+		.send({ message: 'Les champs nom, prénom et email sont requis.' });
+	}
+  
+	try {
+	  const result = await db.query(
+		`UPDATE Client
+		   SET nom    = $1,
+			   prenom = $2,
+			   email  = $3
+		 WHERE id = $4
+	  RETURNING *;`,
+		[nom, prenom, email, id]
+	  );
+  
+	  if (result.rowCount === 0) {
+		return res.status(404).send({ message: 'Client non trouvé.' });
+	  }
+  
+	  res
+		.status(200)
+		.send({ message: 'Client mis à jour avec succès.', client: result.rows[0] });
+	} catch (err) {
+	  console.error('Erreur mise à jour client :', err);
+	  res.status(500).send({ message: 'Erreur serveur lors de la mise à jour.' });
+	}
+  });
+  
+// Suppression d’un client
+app.delete('/client/:id', async (req, res) => {
+	const id = req.params.id;
+
+	try {
+		const result = await db.query(
+		`DELETE FROM Client
+				WHERE id = $1
+			RETURNING *;`,
+		[id]
+		);
+
+		if (result.rowCount === 0) {
+		return res.status(404).send({ message: 'Client non trouvé.' });
+		}
+
+		res.status(200).send({ message: 'Client supprimé avec succès.' });
+	} catch (err) {
+		console.error('Erreur suppression client :', err);
+		res.status(500).send({ message: 'Erreur serveur lors de la suppression.' });
+	}
+});
+
+
 app.post('/client/', async (req, res) => {
 	const { fname, surname, email, password } = req.body;
 	try {
