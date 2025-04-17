@@ -26,7 +26,7 @@ await db.connect();
 
 await db.query("SET search_path TO 'velivelo';")
 await db.query("SELECT setval('Location_id_seq', COALESCE((SELECT MAX(id) FROM Location), 1), false);")
-await db.query("SELECT setval('Location_id_seq', COALESCE((SELECT MAX(id) FROM Client), 1), false);")
+await db.query("SELECT setval('Client_id_seq', COALESCE((SELECT MAX(id) FROM Client), 1), false);")
 
 
 /*const res = await db.query('SELECT * FROM Client;') 
@@ -230,6 +230,27 @@ app.post('/se_connecter', async (req, res) => {
 	}
 });
 
+app.post('/se_connecter_gerant', async (req, res) => {
+	let account = req.body;
+	console.log(account);
+	let row_gerant = await db.query(`SELECT id from Gerant where email = '${account.email}' AND mot_de_passe = '${account.password}';`) 
+	if(row_gerant.rows.length == 0){
+		console.log("Pas de user");
+		res.send({
+			success: false,
+			message: "Email ou mot de passe incorrect"
+		  });
+	}
+	else{	
+		console.log("Id gerant : ",row_gerant.rows[0]);
+		res.send({
+			id_gerant: row_gerant.rows[0].id,
+			success: true,
+			message: "Connexion réussie !",
+		});
+	}
+});
+
 // Gérants
 
 app.get('/gerant/', async (req, res)=>{
@@ -417,6 +438,35 @@ app.get('/location_list/', async (req, res)=>{
 	res.send(locations.rows);
 })
 
+app.get('/location_list/client/:id', async (req, res) => {
+	const clientId = req.params.id;
+	  
+	try {
+	  const locations = await db.query(
+		`SELECT 
+		  Location.id as id_location, 
+		  Velo.id as id_velo, 
+		  Velo.nom as nom_velo, 
+		  Client.id as id_client, 
+		  Client.nom, 
+		  Client.prenom, 
+		  Velo.Etat, 
+		  date_debut, 
+		  date_fin_estimee 
+		FROM Location 
+		JOIN Client ON Location.id_client = Client.id 
+		JOIN Velo ON Location.id_velo = Velo.id 
+		WHERE Client.id = $1;`,
+		[clientId]
+	  );
+  
+	  res.send(locations.rows);
+	} catch (err) {
+	  console.error('Erreur lors de la récupération des locations du client :', err);
+	  res.status(500).send('Erreur serveur');
+	}
+});
+  
 app.get('/location/:id', async (req, res)=>{
 	let location = await db.query(`SELECT * FROM Location where id = ${req.params.id};`) 
 	res.send(location.rows[0]);
