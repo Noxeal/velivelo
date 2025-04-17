@@ -159,9 +159,67 @@ app.get('/velo/', async (req, res)=>{
 	res.send(velos.rows);
 });
 
-app.get('/velo_disponibles/', async (req, res)=>{
+app.get('/velos_disponibles/', async (req, res)=>{
 	let velos = await db.query('SELECT * FROM Velos_disponibles;') 
 	res.send(velos.rows);
+});
+
+app.post('/velos_disponibles/date', async (req, res)=>{
+	const { date } = req.body;
+	console.log("date : ", date);
+	const resultNonDispo = await db.query(
+		`SELECT id_velo FROM Location WHERE $1 BETWEEN date_debut AND date_fin_estimee`,
+		[new Date(date)]
+	);
+	console.log("resultNonDispo :",resultNonDispo);
+
+	const idsNonDispo = resultNonDispo.rows.map(row => row.id_velo);
+
+	console.log("idsNonDispo :", idsNonDispo);
+	let velos;
+
+	if (idsNonDispo.length > 0) {
+		const placeholders = idsNonDispo.map((_, i) => `$${i + 1}`).join(',');
+		velos = await db.query(
+		`SELECT * FROM Velo WHERE id NOT IN (${placeholders})`,
+		[...idsNonDispo]  // ⬅️ PAS de "date" ici !
+		);
+	} else {
+		velos = await db.query(`SELECT * FROM Velos_disponibles`);
+	}
+	res.send(velos.rows);
+});
+
+app.post('/velos_disponibles/double_dates', async (req, res)=>{
+	const { date_debut, date_fin } = req.body;
+	console.log("Recherche entre :", date_debut, "et", date_fin);
+
+	try {
+		// 1. Sélection des vélos indisponibles pendant l'intervalle donné
+		const resultNonDispo = await db.query(
+			`SELECT id_velo FROM Location 
+			WHERE NOT ($2 < date_debut OR $1 > date_fin_estimee)`,
+			[date_debut, date_fin]
+		);
+
+		const idsNonDispo = resultNonDispo.rows.map(row => row.id_velo);
+		console.log("Vélos non dispo :", idsNonDispo);
+
+		let velos;
+		if (idsNonDispo.length > 0) {
+			const placeholders = idsNonDispo.map((_, i) => `$${i + 1}`).join(',');
+			velos = await db.query(
+				`SELECT * FROM Velo WHERE id NOT IN (${placeholders})`,
+				[...idsNonDispo]
+			);
+		} else {
+			velos = await db.query(`SELECT * FROM Velo`);
+		}
+		res.send(velos.rows);
+	} catch (error) {
+		console.error("Erreur dans /velos_disponibles/date :", error);
+		res.status(500).send({ error: 'Erreur serveur' });
+	}
 });
 
 app.get('/velo/:id', async (req, res)=>{

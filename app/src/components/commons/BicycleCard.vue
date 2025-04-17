@@ -1,5 +1,5 @@
 <template>
-    <div class="bicycle-infos">
+    <div :class="['bicycle-infos', { selected: this.selected }]">
         <div class="photo">
             <img :src="photoUrl" alt="Photo du vélo" v-if="bicycle.photo" />
         </div>
@@ -23,6 +23,10 @@ export default {
         is_list_element: {
             type: Boolean,
             default: false
+        },
+        selected: {
+            type: Boolean,
+            required:false,
         }
     },
     data() {
@@ -67,6 +71,11 @@ export default {
     color: white;
     padding: 2rem;
     border-radius: 8px;
+}
+
+.bicycle-infos.selected {
+    background-color: var(--color-soft-blue);
+    outline:5px solid var(--color-pink);
 }
 
 .photo img {

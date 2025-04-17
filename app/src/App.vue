@@ -1,10 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Connection from './components/Connection/Connection.vue'
 import NavBar from './components/commons/NavBar.vue'
 import ConnectionGerant from './components/Connection/ConnectionGerant.vue'
 import BicycleCard from './components/commons/BicycleCard.vue'
-import Louer from './components/Connection/Louer.vue'
+import Louer from './components/Louer.vue'
 import BicycleList from './components/BicycleList.vue'
 
 const is_connected = ref(false)
@@ -13,6 +13,24 @@ const id_client = ref(null);
 const id_gerant = ref(null);
 const page = ref('Connection');
 const id_velo = ref(3);
+const bicycleList = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await fetch('http://localhost:3000/velo')
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP : ${response.status}`)
+    }
+    const data = await response.json()
+    if (Array.isArray(data)) {
+      bicycleList.value = data
+    } else {
+      console.warn('Les données reçues ne sont pas un tableau :', data)
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération des vélos :', error)
+  }
+})
 
 const change_current_page = (newPage) => {
   page.value = newPage;
@@ -43,9 +61,9 @@ const handle_gerant = (bool, val) => {
     <Louer v-if="page == 'Louer'"/>
     <ConnectionGerant v-if="page == 'ConnectionGerant'" @update:handle_gerant="handle_gerant" 
     @update:change_current_page="change_current_page"/>
-    <BicycleList v-if="page == 'ListeVelos'"></BicycleList>
+*    <BicycleList v-if="page == 'ListeVelos'":bicycle_list="bicycleList" />
   </main>
 </template>
 
-<style scoped>
+<style>
 </style>

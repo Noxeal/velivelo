@@ -1,4 +1,5 @@
 SET SCHEMA 'velivelo';
+DROP VIEW if exists Velos_disponibles;
 DROP TABLE if exists Location;
 DROP TABLE if exists Client;
 DROP TABLE if exists Gerant;
@@ -66,4 +67,5 @@ INSERT INTO Client Values (2, 'Margaux', 'Bisquay', 'loremipsum@gmail.fr', 'tata
 
 INSERT INTO Gerant Values (1, 'Jean', 'Gérant', 'jeangerant@outlook.de', 'kartoffel salat');
 
-INSERT INTO Location Values (1, 'En Cours', '2024-04-12', '2024-05-12', NULL, 0.0, 1, 1, NULL);
+INSERT INTO Location Values (1, 'En Cours', '2025-04-12', '2025-05-12', NULL, 0.0, 1, 1, NULL);
+CREATE VIEW Velos_disponibles as SELECT * from Velo where maintenance = FALSE;
