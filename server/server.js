@@ -25,6 +25,10 @@ const db = new Db({user:process.env.db_user, password:process.env.db_password, d
 await db.connect();
 
 await db.query("SET search_path TO 'velivelo';")
+await db.query("SELECT setval('Location_id_seq', COALESCE((SELECT MAX(id) FROM Location), 1), false);")
+await db.query("SELECT setval('Location_id_seq', COALESCE((SELECT MAX(id) FROM Client), 1), false);")
+
+
 /*const res = await db.query('SELECT * FROM Client;') 
 console.log(res.rows[0]);*/
 
