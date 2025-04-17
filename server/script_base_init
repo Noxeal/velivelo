@@ -59,7 +59,7 @@ INSERT INTO Velo Values (6, 'Vélo de ville moyennement rapide', 'Un vélo de vi
 INSERT INTO Velo Values (7, 'Vélo de course lent', 'Un vélo de course ancien mais fiable pour les balades tranquilles.', 'Usé', FALSE, 'Vélo de course', 5, 300, 2015, 10.0, 'velo_course_lent.jpg');
 INSERT INTO Velo Values (8, 'VTT lent', 'Un VTT solide pour les débutants ou les trajets occasionnels.', 'Quasi neuf', FALSE, 'VTT', 5, 300, 2018, 10.0, 'vtt_lent.jpg');
 INSERT INTO Velo Values (9, 'Vélo de ville lent', 'Un vélo de ville classique pour les trajets courts.', 'Neuf', FALSE, 'Vélo de ville', 5, 300, 2012, 10.0, 'velo_ville_lent.jpg');
-INSERT INTO Velo Values (10, 'Vélo sans roues', 'Un vélo en maintenance, actuellement inutilisable.', 'Usé', TRUE, 'Vélo de course', 5, 300, 2024, 10.0, 'vélo_sans_roues.jpeg');
+INSERT INTO Velo Values (10, 'Vélo sans roues', 'Un vélo en maintenance, actuellement inutilisable.', 'Usé', TRUE, 'Vélo de course', 5, 300, 2024, 10.0, 'velo_sans_roues.jpeg');
 
 
 INSERT INTO Client Values (1, 'Maël', 'Le Rouzic', 'jeanhubert@gmail.com', 'toto');
