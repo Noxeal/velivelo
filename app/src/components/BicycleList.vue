@@ -1,8 +1,25 @@
 <template>
   <div class="bicycle-list">
-    <div v-for="bicycle in bicycle_list" :key="bicycle.id" @click="openModal(bicycle.id)" class="bicycle-card-wrapper">
-      <BicycleCard :id="bicycle.id" :is_list_element="true" />
+
+    <h1>Liste des vélos</h1>
+
+    <div class="filters">
+        <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Rechercher un vélo..."
+        />
     </div>
+
+    <div
+        v-for="bicycle in filteredBicycles"
+        :key="bicycle.id"
+        @click="openModal(bicycle.id)"
+        class="bicycle-card-wrapper"
+        >
+        <BicycleCard :id="bicycle.id" :is_list_element="true" />
+    </div>
+
 
     <!-- Modale -->
     <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
@@ -30,9 +47,22 @@ export default {
   data() {
     return {
       isModalOpen: false,
-      selectedBicycleId: null
+      selectedBicycleId: null,
+      searchQuery: ''
     };
   },
+
+  computed: {
+    filteredBicycles() {
+            const query = this.searchQuery.toLowerCase();
+            return this.bicycle_list.filter(bicycle =>
+            (bicycle.nom && bicycle.nom.toLowerCase().includes(query)) ||
+            (bicycle.type && bicycle.type.toLowerCase().includes(query)) ||
+            (bicycle.etat && bicycle.etat.toLowerCase().includes(query))
+            );
+        }
+},
+
   methods: {
     openModal(bicycleId) {
       this.selectedBicycleId = bicycleId;
@@ -98,4 +128,26 @@ export default {
   font-size: 2rem;
   cursor: pointer;
 }
+
+.filters {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.filters input {
+  width: 300px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-dark-blue);
+}
+
+h1 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--color-dark-blue);
+  }
+
 </style>

@@ -1,6 +1,15 @@
 <template>
     <div class="locations-list">
       <h1>Liste des locations</h1>
+
+      <div class="filters">
+        <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Rechercher par nom du client ou vélo..."
+        />
+      </div>
+
   
       <!-- Header -->
       <div class="location-item header">
@@ -28,10 +37,11 @@
   
       <!-- Lignes -->
       <div
-        v-for="location in locations_list"
+        v-for="location in filteredLocations"
         :key="location.id_location"
         class="location-item"
-      >
+        >
+
         <div class="location-col hoverable" @click="openVeloModal(location.id_velo)">
           <p>{{ location.id_velo }}</p>
           <p>{{ location.nom_velo }}</p>
@@ -132,8 +142,21 @@
         showEditModal: false,
         editLocationData: null,
         editDateDebut: '',
-        editDateFin: ''
+        editDateFin: '',
+        searchQuery: '',
       };
+    },
+    computed: {
+        filteredLocations() {
+            const query = this.searchQuery.toLowerCase();
+            return this.locations_list.filter(loc => {
+            return (
+                loc.nom.toLowerCase().includes(query) ||
+                loc.prenom.toLowerCase().includes(query) ||
+                loc.nom_velo.toLowerCase().includes(query)
+            );
+            });
+        }
     },
     async created() {
       await this.fetchLocations();
@@ -175,8 +198,16 @@
       },
       openEditModal(location) {
         this.editLocationData = location;
-        this.editDateDebut = location.date_debut.split('T')[0];
-        this.editDateFin = location.date_fin_estimee.split('T')[0];
+
+        const toLocalDate = (isoDateStr) => {
+            const date = new Date(isoDateStr);
+            const offset = date.getTimezoneOffset();
+            date.setMinutes(date.getMinutes() - offset);
+            return date.toISOString().split('T')[0];
+        };
+
+        this.editDateDebut = toLocalDate(location.date_debut);
+        this.editDateFin = toLocalDate(location.date_fin_estimee);
         this.showEditModal = true;
       },
       async confirmEdit() {
@@ -316,5 +347,19 @@
     background-color: var(--color-soft-blue);
     color: white;
   }
+
+  .filters {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.filters input {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-dark-blue);
+  width: 300px;
+}
+
   </style>
   
