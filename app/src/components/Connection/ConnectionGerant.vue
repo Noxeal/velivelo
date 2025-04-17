@@ -2,6 +2,8 @@
   <div class="login-container">
     <h1 class="title">Se Connecter (Gérant)</h1>
 
+    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
     <div class="input-row">
       <label for="email">Email :</label>
       <input id="email" v-model="email" />
@@ -22,7 +24,8 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      errorMessage: ""
     }
   },
   methods: {
@@ -49,6 +52,10 @@ export default {
         const json = await response.json()
         console.log("Réponse du serveur :", json)
 
+        if (!json || !json.id_gerant) {
+          this.errorMessage = "Identifiants incorrects.";
+          return;
+        }
         // Émettre les événements vers le parent
         this.$emit('update:handle_gerant', true, json.id_gerant);
         this.$emit('update:change_current_page', 'ListeVelos');
@@ -74,6 +81,15 @@ export default {
   gap: 15px;
   font-family: 'Segoe UI', sans-serif;
   color: var(--color-dark-blue);
+}
+
+.error-message {
+  background-color: #ffe5e5;
+  color: #c0392b;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .title {
