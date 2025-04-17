@@ -8,6 +8,7 @@ import BicycleCard from './components/commons/BicycleCard.vue'
 import Louer from './components/Connection/Louer.vue'
 import BicycleList from './components/BicycleList.vue'
 import LocationsList from './components/LocationsList.vue'
+import ClientsList from './components/ClientsList.vue'
 
 const is_connected = ref(false)
 const is_gerant = ref(false)
@@ -49,6 +50,7 @@ const handle_gerant = (bool, val) => {
     @update:change_current_page="change_current_page"/>
     <BicycleList v-if="page == 'ListeVelos'"></BicycleList>
     <LocationsList v-if="page == 'ListeLocations'"></LocationsList>
+    <ClientsList v-if="page == 'ListeClients'"></ClientsList>
   </main>
 </template>
 
