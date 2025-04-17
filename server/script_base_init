@@ -27,6 +27,7 @@ CREATE TABLE Velo(
 	description VARCHAR(100) NOT NULL,
 	etat VARCHAR(50) NOT NULL,
 	maintenance BOOLEAN NOT NULL,
+	etat_maintenance VARCHAR(50) NOT NULL,
 	type VARCHAR(50) NOT NULL,
 	duree_de_vie INTEGER NOT NULL,
 	cycle_de_vie INTEGER NOT NULL,
@@ -50,16 +51,16 @@ CREATE TABLE Location(
 	FOREIGN KEY (id_gerant) REFERENCES Gerant(id)
 );
 
-INSERT INTO Velo Values (1, 'Vélo de course trop rapide', 'Un vélo de course conçu pour les amateurs de vitesse.', 'Neuf', FALSE, 'Vélo de course', 5, 300, 2024, 10.0, 'velo_course_rapide.jpg');
-INSERT INTO Velo Values (2, 'VTT trop rapide', 'Un VTT robuste et rapide pour les terrains difficiles.', 'Quasi neuf', FALSE, 'VTT', 5, 300, 2024, 10.0, 'vtt_rapide.jpeg');
-INSERT INTO Velo Values (3, 'Vélo de ville trop rapide', 'Un vélo de ville élégant et rapide pour les trajets urbains.', 'Neuf', FALSE, 'Vélo de ville', 5, 300, 2024, 10.0, 'velo_ville_rapide.jpg');
-INSERT INTO Velo Values (4, 'Vélo de course moyennement rapide', 'Un vélo de course équilibré pour les cyclistes intermédiaires.', 'Neuf', FALSE, 'Vélo de course', 5, 300, 2021, 10.0, 'velo_course_moyen.jpeg');
-INSERT INTO Velo Values (5, 'VTT moyennement rapide', 'Un VTT polyvalent pour les amateurs de randonnée.', 'Quasi neuf', FALSE, 'VTT', 5, 300, 2021, 10.0, 'vtt_moyen.jpeg');
-INSERT INTO Velo Values (6, 'Vélo de ville moyennement rapide', 'Un vélo de ville confortable pour les trajets quotidiens.', 'Neuf', FALSE, 'Vélo de ville', 5, 300, 2022, 10.0, 'velo_ville_moyen.jpeg');
-INSERT INTO Velo Values (7, 'Vélo de course lent', 'Un vélo de course ancien mais fiable pour les balades tranquilles.', 'Usé', FALSE, 'Vélo de course', 5, 300, 2015, 10.0, 'velo_course_lent.jpg');
-INSERT INTO Velo Values (8, 'VTT lent', 'Un VTT solide pour les débutants ou les trajets occasionnels.', 'Quasi neuf', FALSE, 'VTT', 5, 300, 2018, 10.0, 'vtt_lent.jpg');
-INSERT INTO Velo Values (9, 'Vélo de ville lent', 'Un vélo de ville classique pour les trajets courts.', 'Neuf', FALSE, 'Vélo de ville', 5, 300, 2012, 10.0, 'velo_ville_lent.jpg');
-INSERT INTO Velo Values (10, 'Vélo sans roues', 'Un vélo en maintenance, actuellement inutilisable.', 'Usé', TRUE, 'Vélo de course', 5, 300, 2024, 10.0, 'velo_sans_roues.jpeg');
+INSERT INTO Velo Values (1, 'Vélo de course trop rapide', 'Un vélo de course conçu pour les amateurs de vitesse.', 'Neuf', FALSE, 'Pas en maintenance', 'Vélo de course', 5, 300, 2024, 10.0, 'velo_course_rapide.jpg');
+INSERT INTO Velo Values (2, 'VTT trop rapide', 'Un VTT robuste et rapide pour les terrains difficiles.', 'Quasi neuf', FALSE, 'Pas en maintenance', 'VTT', 5, 300, 2024, 10.0, 'vtt_rapide.jpeg');
+INSERT INTO Velo Values (3, 'Vélo de ville trop rapide', 'Un vélo de ville élégant et rapide pour les trajets urbains.', 'Neuf', FALSE, 'Pas en maintenance', 'Vélo de ville', 5, 300, 2024, 10.0, 'velo_ville_rapide.jpg');
+INSERT INTO Velo Values (4, 'Vélo de course moyennement rapide', 'Un vélo de course équilibré pour les cyclistes intermédiaires.', 'Neuf', FALSE, 'Pas en maintenance', 'Vélo de course', 5, 300, 2021, 10.0, 'velo_course_moyen.jpeg');
+INSERT INTO Velo Values (5, 'VTT moyennement rapide', 'Un VTT polyvalent pour les amateurs de randonnée.', 'Quasi neuf', FALSE, 'Pas en maintenance', 'VTT', 5, 300, 2021, 10.0, 'vtt_moyen.jpeg');
+INSERT INTO Velo Values (6, 'Vélo de ville moyennement rapide', 'Un vélo de ville confortable pour les trajets quotidiens.', 'Neuf', FALSE, 'Pas en maintenance', 'Vélo de ville', 5, 300, 2022, 10.0, 'velo_ville_moyen.jpeg');
+INSERT INTO Velo Values (7, 'Vélo de course lent', 'Un vélo de course ancien mais fiable pour les balades tranquilles.', 'Usé', FALSE, 'Pas en maintenance', 'Vélo de course', 5, 300, 2015, 10.0, 'velo_course_lent.jpg');
+INSERT INTO Velo Values (8, 'VTT lent', 'Un VTT solide pour les débutants ou les trajets occasionnels.', 'Quasi neuf', FALSE, 'Pas en maintenance', 'VTT', 5, 300, 2018, 10.0, 'vtt_lent.jpg');
+INSERT INTO Velo Values (9, 'Vélo de ville lent', 'Un vélo de ville classique pour les trajets courts.', 'Neuf', FALSE, 'Pas en maintenance', 'Vélo de ville', 5, 300, 2012, 10.0, 'velo_ville_lent.jpg');
+INSERT INTO Velo Values (10, 'Vélo sans roues', 'Un vélo en maintenance, actuellement inutilisable.', 'Usé', TRUE, 'Pas en maintenance', 'Vélo de course', 5, 300, 2024, 10.0, 'velo_sans_roues.jpeg');
 
 
 INSERT INTO Client Values (1, 'Maël', 'Le Rouzic', 'jeanhubert@gmail.com', 'toto');

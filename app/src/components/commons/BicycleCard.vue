@@ -1,66 +1,105 @@
 <template>
-    <div :class="['bicycle-infos', { selected: this.selected }]">
-        <div class="photo">
-            <img :src="photoUrl" alt="Photo du vélo" v-if="bicycle.photo" />
-        </div>
-        <div class="details">
-            <h2>{{ bicycle.nom }}</h2>
-            <p v-if="!is_list_element"><strong></strong> {{ bicycle.description }}</p>
-            <p><strong>État :</strong> {{ bicycle.etat }}</p>
-            <p v-if="!is_list_element"><strong>Type :</strong> {{ bicycle.type }}</p>
-            <p><strong>Année de mise en service :</strong> {{ bicycle.annee_mise_en_service }}</p>
-        </div>
+    <div :class="['bicycle-infos', { selected: selected }]">
+      <div class="photo">
+        <img :src="photoUrl" alt="Photo du vélo" v-if="bicycle.photo" />
+      </div>
+  
+      <div class="details">
+        <h2>{{ bicycle.nom }}</h2>
+        <p v-if="!is_list_element">{{ bicycle.description }}</p>
+        <p><strong>État :</strong> {{ bicycle.etat }}</p>
+        <p v-if="!is_list_element"><strong>Type :</strong> {{ bicycle.type }}</p>
+        <p><strong>Année de mise en service :</strong> {{ bicycle.annee_mise_en_service }}</p>
+        <button v-if="can_modify" class="update-button" @click.stop="showUpdateModal = true">Modifier</button>
+      </div>
+  
+      <!-- Modale de mise à jour -->
+      <Modal v-if="showUpdateModal" @close="showUpdateModal = false">
+        <h2>Modifier le vélo</h2>
+        <form @submit.prevent="updateBicycle">
+          <div class="form-group">
+            <label>Nom</label>
+            <input v-model="bicycle.nom" required />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <input v-model="bicycle.description" />
+          </div>
+          <div class="form-group">
+            <label>État</label>
+            <input v-model="bicycle.etat" />
+          </div>
+          <div class="form-group">
+            <label>Maintenance</label>
+            <input type="checkbox" v-model="bicycle.maintenance" />
+          </div>
+          <div v-if="bicycle.maintenance" class="form-group">
+            <label>État de maintenance</label>
+            <input v-model="bicycle.etat_maintenance" />
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <input v-model="bicycle.type" />
+          </div>
+          <div class="form-group">
+            <label>Année de mise en service</label>
+            <input type="number" v-model="bicycle.annee_mise_en_service" />
+          </div>
+          <div class="form-group">
+            <label>Photo (nom de fichier)</label>
+            <input v-model="bicycle.photo" />
+          </div>
+          <button type="submit" class="submit-button">Enregistrer</button>
+        </form>
+      </Modal>
     </div>
-</template>
-
-<script>
-export default {
+  </template>
+  
+  <script>
+  import Modal from '@/components/commons/Modal.vue';
+  
+  export default {
+    components: { Modal },
     props: {
-        id: {
-            type: Number,
-            required: true
-        },
-        is_list_element: {
-            type: Boolean,
-            default: false
-        },
-        selected: {
-            type: Boolean,
-            required:false,
-        }
+      bicycle: Object,
+      is_list_element: Boolean,
+      selected: Boolean,
+      can_modify: Boolean,
+      is_gerant: Boolean
     },
+    emits: ['update-complete'],
     data() {
-        return {
-            bicycle: {},
-            imagesFolder: import.meta.env.VITE_IMAGES_FOLDER
-        };
+      return {
+        showUpdateModal: false,
+        imagesFolder: import.meta.env.VITE_IMAGES_FOLDER
+      };
     },
     computed: {
-        photoUrl() {
-            return this.bicycle.photo ? `${this.imagesFolder}/${this.bicycle.photo}` : '';
-        }
-    },
-    async created() {
-        await this.fetchBicycle();
+      photoUrl() {
+        return this.bicycle.photo ? `${this.imagesFolder}/${this.bicycle.photo}` : '';
+      }
     },
     methods: {
-        async fetchBicycle() {
-            try {
-                const response = await fetch(`http://localhost:3000/velo/${this.id}`);
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP : ${response.status}`);
-                }
-                this.bicycle = await response.json();
-                console.log("Données du vélo :", this.bicycle);
-                console.log("URL de la photo :", this.photoUrl);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des données :", error);
-            }
+      async updateBicycle() {
+        try {
+          const response = await fetch(`http://localhost:3000/velo/${this.bicycle.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(this.bicycle)
+          });
+          if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+          alert('Vélo mis à jour avec succès !');
+          this.$emit('update-complete');
+          this.showUpdateModal = false;
+        } catch (error) {
+          console.error('Erreur de mise à jour :', error);
+          alert('Échec de la mise à jour.');
         }
+      }
     }
-};
-</script>
-
+  };
+  </script>
+  
 
 <style scoped>
 .bicycle-infos {
@@ -75,12 +114,10 @@ export default {
 
 .bicycle-infos.selected {
     background-color: var(--color-soft-blue);
-    outline:5px solid var(--color-pink);
+    outline: 5px solid var(--color-pink);
 }
 
 .photo img {
-    /* max-width: 200px;
-    max-height: 200px; */
     width: 200px;
     height: 200px;
     border-radius: 8px;
@@ -96,5 +133,42 @@ export default {
 
 .details p {
     margin: 5px 0;
+}
+
+.update-button {
+    margin-top: 1rem;
+    background-color: white;
+    color: var(--color-dark-blue);
+    padding: 0.4rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.submit-button {
+    margin-top: 1rem;
+    background-color: var(--color-pink);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.3rem;
+    color: white;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.4rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
 </style>

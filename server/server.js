@@ -36,7 +36,7 @@ console.log(res.rows[0]);*/
 // Test 
 
 app.get("/", (req, res) => {
-	res.json({ message: "Welcome to bezkoder application." });
+	res.json({ message: "Welcome to Velivelo application." });
 });
 
 
@@ -420,10 +420,45 @@ app.post('/velo', async (req, res) => {
 	  });
 	}
   });
+  app.put('/velo/:id', async (req, res) => {
+    const { nom, description, etat, maintenance, etat_maintenance, type, annee_mise_en_service, photo } = req.body;
+    
+    // Validation des données (optionnelle mais recommandée)
+    if (!nom || !etat || !annee_mise_en_service) {
+        return res.status(400).send('Nom, état et année de mise en service sont obligatoires');
+    }
 
-app.put('/velo/update_nom/:id', async (req, res)=> {
-	let velo = await db.query(`UPDATE Velo SET nom = ${req.body} where id = ${req.params.id} ;`) 
-	res.send(velo.rows[0]);
+    // Construction de la requête dynamique
+    const query = `UPDATE Velo SET nom = $1, description = $2, etat = $3, maintenance = $4, etat_maintenance = $5,
+            type = $6, annee_mise_en_service = $7, photo = $8 WHERE id = $9 RETURNING *;`;
+    
+    const values = [
+        nom,
+        description,
+        etat,
+        maintenance,
+        etat_maintenance || null, // Si etat_maintenance est nul, on le passe comme null
+        type,
+        annee_mise_en_service,
+        photo,
+        req.params.id
+    ];
+
+    try {
+        // Exécution de la requête paramétrée
+        const result = await db.query(query, values);
+        
+        // Si aucun vélo n'est trouvé, renvoyer une erreur
+        if (result.rows.length === 0) {
+            return res.status(404).send('Vélo non trouvé');
+        }
+
+        // Envoi de la réponse avec les données mises à jour
+        res.send(result.rows[0]);
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour du vélo:', error);
+        res.status(500).send('Erreur serveur');
+    }
 });
 
 app.put('/velo/update_etat/:id', async (req, res)=> {

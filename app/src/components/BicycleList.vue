@@ -1,31 +1,30 @@
 <template>
   <div class="bicycle-list">
-
     <h1>Liste des vélos</h1>
 
     <div class="filters">
-        <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Rechercher un vélo..."
-        />
-        <AddBicycle v-if="is_gerant"/>
-    </div>
-    <div
-        v-for="bicycle in filteredBicycles"
-        :key="bicycle.id"
-        @click="openModal(bicycle.id)"
-        class="bicycle-card-wrapper"
-        >
-        <BicycleCard :id="bicycle.id" :is_list_element="true" />
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Rechercher un vélo..."
+      />
+      <AddBicycle v-if="is_gerant" />
     </div>
 
+    <div
+      v-for="bicycle in filteredBicycles"
+      :key="bicycle.id"
+      @click="openModal(bicycle)"
+      class="bicycle-card-wrapper"
+    >
+      <BicycleCard :bicycle="bicycle" :can_modify="false" :is_list_element="true" @update-complete="reloadBicycles" />
+    </div>
 
     <!-- Modale -->
     <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <button class="modal-close" @click="closeModal">×</button>
-        <BicycleCard :id="selectedBicycleId" :is_list_element="false" />
+        <BicycleCard :bicycle="selectedBicycle" :can_modify=is_gerant :is_list_element="false" :is_gerant="is_gerant" @update-complete="reloadBicycles" />
       </div>
     </div>
   </div>
@@ -36,48 +35,40 @@ import AddBicycle from './AddBicycle.vue';
 import BicycleCard from './commons/BicycleCard.vue';
 
 export default {
-  components: {
-    AddBicycle,
-    BicycleCard
-  },
+  components: { AddBicycle, BicycleCard },
   props: {
-    bicycle_list: {
-      type: Array,
-      required: true
-    },
-    is_gerant:{
-      type: Boolean,
-      required: true
-    }
+    bicycle_list: Array,
+    is_gerant: Boolean
   },
+  emits: ["reload-bicycle-list"],
   data() {
     return {
       isModalOpen: false,
-      selectedBicycleId: null,
-      searchQuery: '',
-      isAddModalOpen: false,
+      selectedBicycle: null,
+      searchQuery: ''
     };
   },
-
   computed: {
     filteredBicycles() {
-        const query = this.searchQuery.toLowerCase();
-        return this.bicycle_list.filter(bicycle =>
-        (bicycle.nom && bicycle.nom.toLowerCase().includes(query)) ||
-        (bicycle.type && bicycle.type.toLowerCase().includes(query)) ||
-        (bicycle.etat && bicycle.etat.toLowerCase().includes(query))
-        );
+      const query = this.searchQuery.toLowerCase();
+      return this.bicycle_list.filter(b =>
+        (b.nom && b.nom.toLowerCase().includes(query)) ||
+        (b.type && b.type.toLowerCase().includes(query)) ||
+        (b.etat && b.etat.toLowerCase().includes(query))
+      );
     }
-},
-
+  },
   methods: {
-    openModal(bicycleId) {
-      this.selectedBicycleId = bicycleId;
+    openModal(bicycle) {
+      this.selectedBicycle = bicycle;
       this.isModalOpen = true;
     },
     closeModal() {
       this.isModalOpen = false;
-      this.selectedBicycleId = null;
+      this.selectedBicycle = null;
+    },
+    reloadBicycles() {
+      this.$emit("reload-bicycle-list");
     }
   }
 };
@@ -101,7 +92,7 @@ export default {
   transition: transform 0.2s;
   width: calc(25% - 20px);
   margin: 10px;
-  height: 300px;
+  height: 370px;
 }
 
 .modal-overlay {
