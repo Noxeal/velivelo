@@ -68,7 +68,10 @@ const handle_gerant = (bool, val) => {
     <ConnectionGerant v-if="page == 'ConnectionGerant'" @update:handle_gerant="handle_gerant" 
     @update:change_current_page="change_current_page"/>
     <BicycleList v-if="page == 'ListeVelos'":bicycle_list="bicycleList" />
-    <LocationsList v-if="page == 'ListeLocations'"></LocationsList>
+    <!-- <LocationsList v-if="page == 'ListeLocations'"></LocationsList> -->
+    <!-- Liste des locations, soit en tant que gérant soit en tant que client avec son id -->
+    <LocationsList v-if="page == 'ListeLocations'" :id_client="id_client" :is_gerant="is_gerant" />
+
     <ClientsList v-if="page == 'ListeClients'"></ClientsList>
   </main>
 </template>
