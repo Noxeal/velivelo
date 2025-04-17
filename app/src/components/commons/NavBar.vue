@@ -1,6 +1,10 @@
 <script>
 export default {
   props: {
+    id_client: {
+            type: Number,
+            required: true
+        },
     current_page: {
       type: String,
       required: true
@@ -42,7 +46,13 @@ export default {
     },
     isImage(label) {
       return typeof label === 'string' && (label.endsWith('.png') || label.endsWith('.jpg') || label.endsWith('.jpeg') || label.endsWith('.svg') || label.endsWith('.gif'));
-    }
+    },
+    handleLogout() {
+    console.log(this.id_client);
+    this.$emit('update:handle_gerant', false, this.id_client);
+    this.$emit('update:handle_client', false, this.id_client);
+    this.$emit('update:change_current_page', 'Connection')
+}
 }
 
 }
@@ -63,7 +73,7 @@ export default {
         :key="page.component"
         v-show="is_gerant || !page.gerant_only" 
         :class="current_page === page.component ? 'active' : ''"
-        @click="changePage(page.component)"
+        @click="page.component === 'Deconnexion' ? handleLogout() : changePage(page.component)"
       >
         {{ page.label }}
       </button>
@@ -75,7 +85,7 @@ export default {
         :key="page.component"
         v-show="is_gerant || !page.gerant_only" 
         :class="current_page === page.component ? 'active' : ''"
-        @click="changePage(page.component)"
+        @click="page.component === 'Deconnexion' ? handleLogout() : changePage(page.component)"
       >
       <span v-if="!isImage(page.label)">
         {{ page.label }}
@@ -91,7 +101,7 @@ export default {
         :key="page.component"
         v-show="is_gerant || !page.gerant_only" 
         :class="current_page === page.component ? 'active' : ''"
-        @click="changePage(page.component)"
+        @click="page.component === 'Deconnexion' ? handleLogout() : changePage(page.component)"
       >
       <span v-if="!isImage(page.label)">
         {{ page.label }}
@@ -107,7 +117,7 @@ export default {
         :key="page.component"
         v-show="is_gerant || !page.gerant_only" 
         :class="current_page === page.component ? 'active' : ''"
-        @click="changePage(page.component)"
+        @click="page.component === 'Deconnexion' ? handleLogout() : changePage(page.component)"
       >
       <span v-if="!isImage(page.label)">
         {{ page.label }}
