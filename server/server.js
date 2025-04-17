@@ -26,7 +26,7 @@ await db.connect();
 
 await db.query("SET search_path TO 'velivelo';")
 await db.query("SELECT setval('Location_id_seq', COALESCE((SELECT MAX(id) FROM Location), 1), false);")
-await db.query("SELECT setval('Location_id_seq', COALESCE((SELECT MAX(id) FROM Client), 1), false);")
+await db.query("SELECT setval('Client_id_seq', COALESCE((SELECT MAX(id) FROM Client), 1), false);")
 
 
 /*const res = await db.query('SELECT * FROM Client;') 
@@ -225,6 +225,27 @@ app.post('/se_connecter', async (req, res) => {
 		console.log("Id client : ",row_client.rows[0]);
 		res.send({
 			id_client: row_client.rows[0].id,
+			success: true,
+			message: "Connexion réussie !",
+		});
+	}
+});
+
+app.post('/se_connecter_gerant', async (req, res) => {
+	let account = req.body;
+	console.log(account);
+	let row_gerant = await db.query(`SELECT id from Gerant where email = '${account.email}' AND mot_de_passe = '${account.password}';`) 
+	if(row_gerant.rows.length == 0){
+		console.log("Pas de user");
+		res.send({
+			success: false,
+			message: "Email ou mot de passe incorrect"
+		  });
+	}
+	else{	
+		console.log("Id gerant : ",row_gerant.rows[0]);
+		res.send({
+			id_gerant: row_gerant.rows[0].id,
 			success: true,
 			message: "Connexion réussie !",
 		});
