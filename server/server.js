@@ -27,6 +27,7 @@ await db.connect();
 await db.query("SET search_path TO 'velivelo';")
 await db.query("SELECT setval('Location_id_seq', COALESCE((SELECT MAX(id) FROM Location), 1), false);")
 await db.query("SELECT setval('Client_id_seq', COALESCE((SELECT MAX(id) FROM Client), 1), false);")
+await db.query("SELECT setval('Velo_id_seq', COALESCE((SELECT MAX(id) FROM Velo), 1), false);")
 
 
 /*const res = await db.query('SELECT * FROM Client;') 
@@ -370,12 +371,56 @@ app.get('/velo/:id', async (req, res)=>{
 	res.send(velos.rows[0]);
 });
 
-app.post('/velo/:id', async (req, res)=> {
-	req.body;
-	let velo = await db.query('INSERT INTO Velo Values ;') 
-	await db.query("CREATE VIEW Velos_disponibles as SELECT * from Velo where maintenance = FALSE");
-	res.send(velo.rows[0]);
-});
+app.post('/velo', async (req, res) => {
+	const {
+	  nom,
+	  type,
+	  etat,
+	  description,
+	  maintenance,
+	  duree_de_vie,
+	  cycle_de_vie,
+	  annee_mise_en_service,
+	  prix,
+	  photo
+	} = req.body;
+  
+	try {
+	  const result = await db.query(
+		`INSERT INTO Velo (
+		  nom, type, etat, description, maintenance, 
+		  duree_de_vie, cycle_de_vie, annee_mise_en_service, 
+		  prix, photo
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		RETURNING *;`,
+		[
+		  nom,
+		  type,
+		  etat,
+		  description,
+		  maintenance,
+		  duree_de_vie,
+		  cycle_de_vie,
+		  annee_mise_en_service,
+		  prix,
+		  photo
+		]
+	  );
+  
+	  res.status(201).send({
+		success: true,
+		message: 'Vélo ajouté avec succès.',
+		velo: result.rows[0]
+	  });
+	} catch (error) {
+	  console.error(error);
+	  res.status(500).send({
+		success: false,
+		message: 'Erreur lors de l’ajout du vélo.',
+		error: error.message
+	  });
+	}
+  });
 
 app.put('/velo/update_nom/:id', async (req, res)=> {
 	let velo = await db.query(`UPDATE Velo SET nom = ${req.body} where id = ${req.params.id} ;`) 

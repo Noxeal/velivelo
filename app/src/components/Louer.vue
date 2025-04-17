@@ -9,7 +9,7 @@ export default {
   },  
   props:{
     id_client:{
-      typeof: Number,
+      type: Number,
       required : true
     }
   },  

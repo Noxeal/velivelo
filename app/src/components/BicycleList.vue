@@ -9,8 +9,8 @@
             type="text"
             placeholder="Rechercher un vélo..."
         />
+        <AddBicycle v-if="is_gerant"/>
     </div>
-
     <div
         v-for="bicycle in filteredBicycles"
         :key="bicycle.id"
@@ -32,15 +32,21 @@
 </template>
 
 <script>
+import AddBicycle from './AddBicycle.vue';
 import BicycleCard from './commons/BicycleCard.vue';
 
 export default {
   components: {
+    AddBicycle,
     BicycleCard
   },
   props: {
     bicycle_list: {
       type: Array,
+      required: true
+    },
+    is_gerant:{
+      type: Boolean,
       required: true
     }
   },
@@ -48,19 +54,20 @@ export default {
     return {
       isModalOpen: false,
       selectedBicycleId: null,
-      searchQuery: ''
+      searchQuery: '',
+      isAddModalOpen: false,
     };
   },
 
   computed: {
     filteredBicycles() {
-            const query = this.searchQuery.toLowerCase();
-            return this.bicycle_list.filter(bicycle =>
-            (bicycle.nom && bicycle.nom.toLowerCase().includes(query)) ||
-            (bicycle.type && bicycle.type.toLowerCase().includes(query)) ||
-            (bicycle.etat && bicycle.etat.toLowerCase().includes(query))
-            );
-        }
+        const query = this.searchQuery.toLowerCase();
+        return this.bicycle_list.filter(bicycle =>
+        (bicycle.nom && bicycle.nom.toLowerCase().includes(query)) ||
+        (bicycle.type && bicycle.type.toLowerCase().includes(query)) ||
+        (bicycle.etat && bicycle.etat.toLowerCase().includes(query))
+        );
+    }
 },
 
   methods: {
