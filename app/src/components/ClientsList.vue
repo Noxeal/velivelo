@@ -14,16 +14,16 @@
       <!-- Lignes -->
       <div
         v-for="client in clients_list"
-        :key="client.id_client"
+        :key="client.id"
         class="client-item"
       >
-        <div class="client-col">{{ client.id_client }}</div>
+        <div class="client-col">{{ client.id }}</div>
         <div class="client-col">{{ client.nom }}</div>
         <div class="client-col">{{ client.prenom }}</div>
         <div class="client-col">{{ client.email }}</div>
         <div class="client-actions">
           <button @click="openEditModal(client)">✏️</button>
-          <button @click="openDeleteModal(client.id_client)">🗑️</button>
+          <button @click="openDeleteModal(client.id)">🗑️</button>
         </div>
       </div>
   
@@ -60,10 +60,6 @@
             <label>Email :</label>
             <input v-model="editEmail" type="email" required />
           </div>
-          <div class="form-group">
-            <label>Téléphone :</label>
-            <input v-model="editTelephone" required />
-          </div>
           <div class="modal-buttons">
             <button type="button" @click="closeModal">Annuler</button>
             <button type="submit">Enregistrer</button>
@@ -97,7 +93,7 @@
     methods: {
       async fetchClients() {
         try {
-          const res = await fetch('http://localhost:3000/client_list/');
+          const res = await fetch('http://localhost:3000/client/');
           const data = await res.json();
           if (Array.isArray(data)) this.clients_list = data;
         } catch (err) {
@@ -121,22 +117,21 @@
       },
       openEditModal(client) {
         this.editClientData = client;
+        console.log('Client à modifier :', client, 'ID :', client.id);
         this.editNom = client.nom;
         this.editPrenom = client.prenom;
         this.editEmail = client.email;
-        this.editTelephone = client.telephone;
         this.showEditModal = true;
       },
       async confirmEdit() {
         try {
-          await fetch(`http://localhost:3000/client/${this.editClientData.id_client}`, {
+          await fetch(`http://localhost:3000/client/${this.editClientData.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               nom: this.editNom,
               prenom: this.editPrenom,
               email: this.editEmail,
-              telephone: this.editTelephone
             })
           });
           this.closeModal();
