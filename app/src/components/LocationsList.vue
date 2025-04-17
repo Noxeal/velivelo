@@ -2,7 +2,7 @@
     <div class="locations-list">
       <h1>Liste des locations</h1>
   
-      <!-- En-tête -->
+      <!-- Header -->
       <div class="location-item header">
         <div class="location-col">
           <p><strong>Id du vélo</strong></p>
@@ -21,48 +21,118 @@
         <div class="location-col">
           <p><strong>Date de fin</strong></p>
         </div>
+        <div class="location-actions-header">
+          <p><strong>Actions</strong></p>
+        </div>
       </div>
   
-      <!-- Lignes des données -->
+      <!-- Lignes -->
       <div
         v-for="location in locations_list"
-        :key="location.id"
+        :key="location.id_location"
         class="location-item"
       >
-        <div class="location-col hoverable">
+        <div class="location-col hoverable" @click="openVeloModal(location.id_velo)">
           <p>{{ location.id_velo }}</p>
           <p>{{ location.nom_velo }}</p>
         </div>
-        <div class="location-col hoverable">
+        <div class="location-col hoverable" @click="openClientModal(location.id_client)">
           <p>{{ location.nom }}</p>
           <p>{{ location.prenom }}</p>
         </div>
-        <div class="location-col hoverable">
+        <div class="location-col">
           <p>{{ location.etat }}</p>
         </div>
-        <div class="location-col hoverable">
-          <p>{{ new Date(location.date_debut).toLocaleDateString('fr-FR') }}</p>
+        <div class="location-col">
+          <p>{{ formatDate(location.date_debut) }}</p>
         </div>
-        <div class="location-col hoverable">
-          <p>{{ new Date(location.date_fin_estimee).toLocaleDateString('fr-FR') }}</p>
+        <div class="location-col">
+          <p>{{ formatDate(location.date_fin_estimee) }}</p>
+        </div>
+        <div class="location-actions">
+          <button @click="openClientModal(location.id_client)">👤</button>
+          <button @click="openVeloModal(location.id_velo)">🚲</button>
+          <button @click="openEditModal(location)">✏️</button>
+          <button @click="openDeleteModal(location.id_location)">🗑️</button>
         </div>
       </div>
   
-      <!-- Message si vide -->
       <div v-if="locations_list.length === 0">
         <p>Aucune location trouvée.</p>
       </div>
       <div v-else>
         <p>Nombre de locations: {{ locations_list.length }}</p>
       </div>
+  
+      <!-- Modales existantes -->
+      <Modal v-if="showVeloModal" @close="closeModal">
+        <BicycleCard :id="selectedVeloId" :is_list_element="false" />
+      </Modal>
+      <Modal v-if="showClientModal" @close="closeModal">
+        <ClientCard :id="selectedClientId" />
+      </Modal>
+  
+      <!-- Modal de confirmation de suppression -->
+      <Modal v-if="showDeleteModal" @close="closeModal">
+        <h2>Confirmer la suppression</h2>
+        <p>Voulez-vous vraiment supprimer cette location ? Cette action est irréversible.</p>
+        <div class="modal-buttons">
+          <button @click="closeModal">Annuler</button>
+          <button @click="confirmDelete">Oui, supprimer</button>
+        </div>
+      </Modal>
+  
+      <!-- Modal d'édition des dates -->
+      <Modal v-if="showEditModal" @close="closeModal">
+        <h2>Modifier les dates de location</h2>
+        <form @submit.prevent="confirmEdit">
+          <div class="form-group">
+            <label for="date-debut">Date de début :</label>
+            <input
+              id="date-debut"
+              type="date"
+              v-model="editDateDebut"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="date-fin">Date de fin estimée :</label>
+            <input
+              id="date-fin"
+              type="date"
+              v-model="editDateFin"
+              required
+            />
+          </div>
+          <div class="modal-buttons">
+            <button type="button" @click="closeModal">Annuler</button>
+            <button type="submit">Enregistrer</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   </template>
   
   <script>
+  import BicycleCard from './commons/BicycleCard.vue';
+  import ClientCard from './commons/ClientCard.vue';
+  import Modal from './commons/Modal.vue';
+  
   export default {
+    components: { BicycleCard, ClientCard, Modal },
     data() {
       return {
         locations_list: [],
+        showVeloModal: false,
+        selectedVeloId: null,
+        showClientModal: false,
+        selectedClientId: null,
+        showDeleteModal: false,
+        deleteId: null,
+        showEditModal: false,
+        editLocationData: null,
+        editDateDebut: '',
+        editDateFin: ''
       };
     },
     async created() {
@@ -71,20 +141,73 @@
     methods: {
       async fetchLocations() {
         try {
-          const response = await fetch("http://localhost:3000/location_list/");
-          if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
-          const data = await response.json();
-          if (Array.isArray(data)) {
-            this.locations_list = data;
-            console.log("Données des locations :", this.locations_list);
-          } else {
-            console.warn("Les données reçues ne sont pas un tableau :", data);
-          }
-        } catch (error) {
-          console.error("Erreur lors de la récupération des données :", error);
+          const res = await fetch('http://localhost:3000/location_list/');
+          if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
+          const data = await res.json();
+          if (Array.isArray(data)) this.locations_list = data;
+        } catch (err) {
+          console.error('Erreur récupération locations :', err);
         }
       },
-    },
+      formatDate(dateStr) {
+        return new Date(dateStr).toLocaleDateString('fr-FR');
+      },
+      openVeloModal(id) {
+        this.selectedVeloId = id;
+        this.showVeloModal = true;
+      },
+      openClientModal(id) {
+        this.selectedClientId = id;
+        this.showClientModal = true;
+      },
+      openDeleteModal(id) {
+        this.deleteId = id;
+        this.showDeleteModal = true;
+      },
+      async confirmDelete() {
+        try {
+          await fetch(`http://localhost:3000/location/${this.deleteId}`, { method: 'DELETE' });
+          this.closeModal();
+          await this.fetchLocations();
+        } catch (err) {
+          console.error('Erreur suppression :', err);
+        }
+      },
+      openEditModal(location) {
+        this.editLocationData = location;
+        this.editDateDebut = location.date_debut.split('T')[0];
+        this.editDateFin = location.date_fin_estimee.split('T')[0];
+        this.showEditModal = true;
+      },
+      async confirmEdit() {
+        try {
+          await fetch(`http://localhost:3000/location/${this.editLocationData.id_location}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              date_debut: this.editDateDebut,
+              date_fin_estimee: this.editDateFin
+            })
+          });
+          this.closeModal();
+          await this.fetchLocations();
+        } catch (err) {
+          console.error('Erreur modification :', err);
+        }
+      },
+      closeModal() {
+        this.showVeloModal = false;
+        this.showClientModal = false;
+        this.showDeleteModal = false;
+        this.showEditModal = false;
+        this.selectedVeloId = null;
+        this.selectedClientId = null;
+        this.deleteId = null;
+        this.editLocationData = null;
+        this.editDateDebut = '';
+        this.editDateFin = '';
+      }
+    }
   };
   </script>
   
@@ -121,11 +244,10 @@
     border-radius: 8px;
   }
   
-  /* Hover uniquement sur les éléments interactifs */
   .hoverable:hover {
     background-color: var(--color-soft-blue);
-    transition: background-color 0.3s;
     cursor: pointer;
+    transition: background-color 0.3s;
   }
   
   .header {
@@ -139,6 +261,60 @@
     font-size: 24px;
     margin-bottom: 10px;
     color: var(--color-dark-blue);
+  }
+  
+  .location-actions-header,
+  .location-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 0.5rem;
+  }
+  
+  .location-actions button {
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+  }
+  
+  .location-actions button:hover {
+    transform: scale(1.2);
+  }
+  
+  /* Styles modales additionnelles */
+  .form-group {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .modal-buttons button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .modal-buttons button:first-child {
+    background-color: var(--color-light-gray);
+    color: var(--color-dark-blue);
+  }
+  
+  .modal-buttons button:last-child {
+    background-color: var(--color-soft-blue);
+    color: white;
   }
   </style>
   

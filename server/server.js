@@ -237,7 +237,7 @@ app.get('/location/', async (req, res)=>{
 });
 
 app.get('/location_list/', async (req, res)=>{
-	let locations = await db.query('SELECT Velo.id as id_velo, Velo.nom as nom_velo, Client.nom, Client.prenom, Velo.Etat, date_debut, date_fin_estimee FROM Location JOIN Client ON Location.id_client = Client.id JOIN Velo ON Location.id_velo = Velo.id;');
+	let locations = await db.query('SELECT Location.id as id_location, Velo.id as id_velo, Velo.nom as nom_velo, Client.id as id_client, Client.nom, Client.prenom, Velo.Etat, date_debut, date_fin_estimee FROM Location JOIN Client ON Location.id_client = Client.id JOIN Velo ON Location.id_velo = Velo.id;');
 	res.send(locations.rows);
 })
 
@@ -245,6 +245,32 @@ app.get('/location/:id', async (req, res)=>{
 	let location = await db.query(`SELECT * FROM Location where id = ${req.params.id};`) 
 	res.send(location.rows[0]);
 });
+
+app.put('/location/:id', async (req, res) => {
+	const id = req.params.id;
+	const { date_debut, date_fin_estimee } = req.body;
+  
+	if (!date_debut || !date_fin_estimee) {
+	  return res.status(400).send({ message: 'Champs date_debut et date_fin_estimee requis.' });
+	}
+  
+	try {
+	  const result = await db.query(
+		`UPDATE Location SET date_debut = $1, date_fin_estimee = $2 WHERE id = $3 RETURNING *;`,
+		[date_debut, date_fin_estimee, id]
+	  );
+  
+	  if (result.rowCount === 0) {
+		return res.status(404).send({ message: 'Location non trouvée.' });
+	  }
+  
+	  res.status(200).send({ message: 'Location mise à jour avec succès.', location: result.rows[0] });
+	} catch (error) {
+	  console.error('Erreur mise à jour location :', error);
+	  res.status(500).send({ message: 'Erreur serveur.' });
+	}
+  });
+  
 
 app.put('/location/update_date_debut/:id', async (req, res)=>{
 	let location = await db.query(`UPDATE Client SET date_debut = ${req.body} where id = ${req.params.id} ;`) 
