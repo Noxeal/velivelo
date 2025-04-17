@@ -68,25 +68,71 @@ app.post('/client/', async (req, res) => {
 	
 });
 
-app.put('/client/update_nom/:id', async (req, res)=> {
-	let clients = await db.query(`UPDATE Client SET nom = ${req.body} where id = ${req.params.id} ;`) 
-	res.send(clients.rows[0]);
-});
+app.put('/client/:id', async (req, res) => {
+	const { nom, prenom, email, mot_de_passe, old_password } = req.body;
+	const id = req.params.id;
+	console.log(old_password);
+  
+	try {
+	  const user = await db.query('SELECT * FROM Client WHERE id = $1', [id]);
+  
+	  if (user.rows.length === 0) {
+		return res.status(404).send("Client non trouvé");
+	  }
 
-app.put('/client/update_prenom/:id', async (req, res)=> {
-	let clients = await db.query(`UPDATE Client SET prenom = ${req.body} where id = ${req.params.id} ;`) 
-	res.send(clients.rows[0]);
-});
-
-app.put('/client/update_email/:id', async (req, res)=> {
-	let clients = await db.query(`UPDATE Client SET email = ${req.body} where id = ${req.params.id} ;`) 
-	res.send(clients.rows[0]);
-});
-
-app.put('/client/update_mot_de_passe/:id', async (req, res)=> {
-	let clients = await db.query(`UPDATE Client SET mot_de_passe = ${req.body} where id = ${req.params.id} ;`) 
-	res.send(clients.rows[0]);
-});
+	  console.log(user.rows[0]);
+  
+	  const current = user.rows[0];
+	  const updates = [];
+	  const values = [];
+	  let paramIndex = 1;
+  
+	  if (mot_de_passe) {
+		console.log(old_password);
+  
+		if (old_password !== user.rows[0].mot_de_passe) {
+		  return res.status(403).send("Ancien mot de passe incorrect");
+		}
+  
+		updates.push(`mot_de_passe = $${paramIndex++}`);
+		values.push(mot_de_passe);
+	  }
+  
+	  if (email) {
+		updates.push(`email = $${paramIndex++}`);
+		values.push(email);
+	  }
+	  if (prenom) {
+		updates.push(`prenom = $${paramIndex++}`);
+		values.push(prenom);
+	  }
+	  if (nom) {
+		updates.push(`nom = $${paramIndex++}`);
+		values.push(nom);
+	  }
+  
+	  if (updates.length === 0) {
+		return res.status(400).send("Rien à mettre à jour");
+	  }
+  
+	  values.push(id);
+  
+	  const query = `
+		UPDATE Client
+		SET ${updates.join(', ')}
+		WHERE id = $${paramIndex}
+		RETURNING *;
+	  `;
+  
+	  const updated = await db.query(query, values);
+	  res.send(updated.rows[0]);
+  
+	} catch (err) {
+	  console.error("Erreur lors de la mise à jour :", err);
+	  res.status(500).send("Erreur serveur");
+	}
+  });
+  
 
 app.delete('/client/:id', async (req, res)=> {
 	await db.query(`DELETE FROM Client where id = ${req.params.id};`) 
