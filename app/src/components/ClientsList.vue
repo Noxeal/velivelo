@@ -1,6 +1,15 @@
 <template>
     <div class="clients-list">
       <h1>Liste des clients</h1>
+
+      <div class="filters">
+        <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Rechercher un client..."
+        />
+      </div>
+
   
       <!-- En-tête -->
       <div class="client-item header">
@@ -13,10 +22,11 @@
   
       <!-- Lignes -->
       <div
-        v-for="client in clients_list"
+        v-for="client in filteredClients"
         :key="client.id"
         class="client-item"
-      >
+        >
+
         <div class="client-col">{{ client.id }}</div>
         <div class="client-col">{{ client.nom }}</div>
         <div class="client-col">{{ client.prenom }}</div>
@@ -84,8 +94,19 @@
         editNom: '',
         editPrenom: '',
         editEmail: '',
-        editTelephone: ''
+        editTelephone: '',
+        searchQuery: ''
       };
+    },
+    computed: {
+        filteredClients() {
+            const query = this.searchQuery.toLowerCase();
+            return this.clients_list.filter(client =>
+            client.nom.toLowerCase().includes(query) ||
+            client.prenom.toLowerCase().includes(query) ||
+            client.email.toLowerCase().includes(query)
+            );
+        }
     },
     async created() {
       await this.fetchClients();
@@ -244,5 +265,19 @@
     background-color: var(--color-soft-blue);
     color: white;
   }
+
+  .filters {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .filters input {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-dark-blue);
+    width: 300px;
+  }
+
   </style>
   
