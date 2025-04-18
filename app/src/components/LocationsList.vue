@@ -69,7 +69,7 @@
           <p>{{ formatDate(location.date_fin_estimee) }}</p>
         </div>
         <div class="location-col">
-          <p>{{ location.prix }}</p>
+            <p>{{ calculateTotalPrice(location) }} €</p>
         </div>
         <div class="location-col">
           <p>{{ location.paiement_actuel }}</p>
@@ -86,7 +86,7 @@
 
         <div class="location-actions">
           <button @click="openClientModal(location.id_client)">👤</button>
-          <button @click="openVeloModal(location.id_velo)">🚲</button>
+          <button @click="openVeloModal(location)">🚲</button>
           <button v-if="is_gerant" @click="openEditModal(location)">✏️</button>
           <button v-if="is_gerant" @click="openDeleteModal(location.id_location)">🗑️</button>
         </div>
@@ -182,6 +182,7 @@
         showDeleteModal: false,
         deleteId: null,
         showEditModal: false,
+        showOnlyMine: false,
         editLocationData: null,
         editDateDebut: '',
         editDateFin: '',
@@ -209,23 +210,24 @@
     },
     methods: {
         async fetchLocations() {
-  try {
-    let url = '';
+            try {
+            let url = '';
 
-    if (this.is_gerant) {
-      url = 'http://localhost:3000/location_list/';
-    } else if (this.id_client !== null) {
-      url = `http://localhost:3000/location_list/client/${this.id_client}`;
-    }
+            if (this.is_gerant) {
+            url = 'http://localhost:3000/location_list/';
+            } else if (this.id_client !== null) {
+            url = `http://localhost:3000/location_list/client/${this.id_client}`;
+            }
 
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
-    const data = await res.json();
-    if (Array.isArray(data)) this.locations_list = data;
-  } catch (err) {
-    console.error('Erreur récupération locations :', err);
-  }
-},
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
+            const data = await res.json();
+            if (Array.isArray(data)) this.locations_list = data;
+            } catch (err) {
+            console.error('Erreur récupération locations :', err);
+        }
+    
+      },
       formatDate(dateStr) {
         return new Date(dateStr).toLocaleDateString('fr-FR');
       },
@@ -285,6 +287,16 @@
         } catch (err) {
           console.error('Erreur modification :', err);
         }
+      },
+      calculateTotalPrice(location) {
+        const debut = new Date(location.date_debut)
+        const fin   = new Date(location.date_fin_estimee)
+        const msInDay = 1000 * 60 * 60 * 24
+
+        // Nombre de jours « plein », puis +1 pour inclure le jour de début
+        const diffDays = Math.floor((fin - debut) / msInDay) + 1
+
+        return (location.prix * diffDays).toFixed(2)
       },
       closeModal() {
         this.showVeloModal = false;
