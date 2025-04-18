@@ -536,7 +536,7 @@ app.get('/location_list/client/:id', async (req, res) => {
 		  Client.id as id_client, 
 		  Client.nom AS nom_client, 
 		  Client.prenom AS prenom_client, 
-		  Velo.Etat, 
+		  Location.Etat, 
 		  date_debut, 
 		  date_fin_estimee,
 		  prix,
