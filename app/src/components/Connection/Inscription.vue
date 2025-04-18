@@ -36,7 +36,6 @@ const onSubmit = async () => {
 
     if (!response.ok) {
       const errorMessageFromBackend = await response.text();
-      console.log(errorMessageFromBackend);
       if (errorMessageFromBackend === "Cet email est déjà utilisé.") {
         errorMessage.value = "Cet email est déjà utilisé.";
       } else {
@@ -44,7 +43,6 @@ const onSubmit = async () => {
       }
     } else {
       const data = await response.json();
-      console.log("Client créé :", data);
       emit('update:change_current_page', 'ListeVelos');
       emit('update:handle_client', true, data.id_client);
     }
