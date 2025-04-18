@@ -8,6 +8,7 @@
             type="text"
             placeholder="Rechercher un client..."
         />
+        <AddClient @client-added="fetchClients"/>
       </div>
 
   
@@ -80,10 +81,11 @@
   </template>
   
   <script>
+  import AddClient from './AddClient.vue';
   import Modal from './commons/Modal.vue';
   
   export default {
-    components: { Modal },
+    components: { AddClient, Modal },
     data() {
       return {
         clients_list: [],
