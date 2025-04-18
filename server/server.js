@@ -671,6 +671,7 @@ app.post('/location_par_gerant', async (req, res) => {
 	console.log("Date fin :", date_fin);
 	console.log("ID vélo :", id_velo);
 	console.log("ID client :", id_client);
+	console.log("ID gérant :", id_gerant);
 
 	try {
 		const result = await db.query(
