@@ -601,10 +601,11 @@ app.get('/location_list/', async (req, res) => {
 			date_fin_estimee,
 			prix,
 			paiement_actuel,
+			Gerant.id AS id_gerant,
 			Gerant.nom AS nom_gerant,
 			Gerant.prenom AS prenom_gerant
-		FROM Location 
-		JOIN Client ON Location.id_client = Client.id 
+		FROM Location
+		JOIN Client ON Location.id_client = Client.id
 		JOIN Velo ON Location.id_velo = Velo.id
 		LEFT JOIN Gerant ON Location.id_gerant = Gerant.id;
 	`);
@@ -621,8 +622,8 @@ app.get('/location_list/client/:id', async (req, res) => {
 		  Velo.id as id_velo, 
 		  Velo.nom as nom_velo, 
 		  Client.id as id_client, 
-		  Client.nom, 
-		  Client.prenom, 
+		  Client.nom AS nom_client, 
+		  Client.prenom AS prenom_client, 
 		  Velo.Etat, 
 		  date_debut, 
 		  date_fin_estimee,
@@ -683,6 +684,7 @@ app.post('/location_par_gerant', async (req, res) => {
 	console.log("Date fin :", date_fin);
 	console.log("ID vélo :", id_velo);
 	console.log("ID client :", id_client);
+	console.log("ID gérant :", id_gerant);
 
 	try {
 		const result = await db.query(
