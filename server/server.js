@@ -710,7 +710,7 @@ app.post('/location_par_gerant', async (req, res) => {
 
 app.put('/location/:id', async (req, res) => {
 	const id = req.params.id;
-	const { date_debut, date_fin_estimee } = req.body;
+	const { date_debut, date_fin_estimee, etat } = req.body;
 
 	if (!date_debut || !date_fin_estimee) {
 		return res.status(400).send({ message: 'Champs date_debut et date_fin_estimee requis.' });
@@ -718,8 +718,8 @@ app.put('/location/:id', async (req, res) => {
 
 	try {
 		const result = await db.query(
-			`UPDATE Location SET date_debut = $1, date_fin_estimee = $2 WHERE id = $3 RETURNING *;`,
-			[date_debut, date_fin_estimee, id]
+			`UPDATE Location SET date_debut = $1, date_fin_estimee = $2, etat = $3 WHERE id = $4 RETURNING *;`,
+			[date_debut, date_fin_estimee, etat,id]
 		);
 
 		if (result.rowCount === 0) {

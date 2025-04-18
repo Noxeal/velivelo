@@ -123,6 +123,14 @@
         <h2>Modifier les dates de location</h2>
         <form @submit.prevent="confirmEdit">
           <div class="form-group">
+          <label for="etat">État de la location :</label>
+          <select id="etat" v-model="editEtat" required>
+            <option value="En Cours">En Cours</option>
+            <option value="terminée">Terminée</option>
+            <option value="annulée">Annulée</option>
+          </select>
+        </div>
+          <div class="form-group">
             <label for="date-debut">Date de début :</label>
             <input
               id="date-debut"
@@ -185,6 +193,7 @@
         editLocationData: null,
         editDateDebut: '',
         editDateFin: '',
+        editEtat: '',
         searchQuery: '',
       };
     },
@@ -257,19 +266,25 @@
         }
       },
       openEditModal(location) {
-        this.editLocationData = location;
+  this.editLocationData = location;
 
-        const toLocalDate = (isoDateStr) => {
-            const date = new Date(isoDateStr);
-            const offset = date.getTimezoneOffset();
-            date.setMinutes(date.getMinutes() - offset);
-            return date.toISOString().split('T')[0];
-        };
+  const toLocalDate = (isoDateStr) => {
+    const date = new Date(isoDateStr);
+    const offset = date.getTimezoneOffset();
+    date.setMinutes(date.getMinutes() - offset);
+    return date.toISOString().split('T')[0];
+  };
 
-        this.editDateDebut = toLocalDate(location.date_debut);
-        this.editDateFin = toLocalDate(location.date_fin_estimee);
-        this.showEditModal = true;
-      },
+  this.editDateDebut = toLocalDate(location.date_debut);
+  this.editDateFin = toLocalDate(location.date_fin_estimee);
+
+  this.editEtat = location.etat;
+
+  console.log(this.editEtat);
+
+  this.showEditModal = true;
+}
+,
       async confirmEdit() {
         try {
           await fetch(`http://localhost:3000/location/${this.editLocationData.id_location}`, {
@@ -277,7 +292,8 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               date_debut: this.editDateDebut,
-              date_fin_estimee: this.editDateFin
+              date_fin_estimee: this.editDateFin,
+              etat: this.editEtat
             })
           });
           this.closeModal();
