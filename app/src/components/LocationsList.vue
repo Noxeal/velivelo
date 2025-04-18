@@ -9,7 +9,6 @@
             placeholder="Rechercher par nom du client ou vélo..."
         />
       </div>
-
   
       <!-- Header -->
       <div class="location-item header">
@@ -18,8 +17,8 @@
           <p><strong>Nom du vélo</strong></p>
         </div>
         <div class="location-col">
-          <p><strong>Nom</strong></p>
-          <p><strong>Prénom</strong></p>
+          <p><strong>Nom client</strong></p>
+          <p><strong>Prénom client</strong></p>
         </div>
         <div class="location-col">
           <p><strong>État</strong></p>
@@ -29,6 +28,15 @@
         </div>
         <div class="location-col">
           <p><strong>Date de fin</strong></p>
+        </div>
+        <div class="location-col">
+          <p><strong>Prix</strong></p>
+        </div>
+        <div class="location-col">
+          <p><strong>Paiement actuel</strong></p>
+        </div>
+        <div class="location-col">
+          <p><strong>Gérant en charge</strong></p>
         </div>
         <div class="location-actions-header">
           <p><strong>Actions</strong></p>
@@ -47,8 +55,8 @@
           <p>{{ location.nom_velo }}</p>
         </div>
         <div class="location-col hoverable" @click="openClientModal(location.id_client)">
-          <p>{{ location.nom }}</p>
-          <p>{{ location.prenom }}</p>
+          <p>{{ location.nom_client }}</p>
+          <p>{{ location.prenom_client }}</p>
         </div>
         <div class="location-col">
           <p>{{ location.etat }}</p>
@@ -59,6 +67,22 @@
         <div class="location-col">
           <p>{{ formatDate(location.date_fin_estimee) }}</p>
         </div>
+        <div class="location-col">
+          <p>{{ location.prix }}</p>
+        </div>
+        <div class="location-col">
+          <p>{{ location.paiement_actuel }}</p>
+        </div>
+        <div class="location-col">
+            <div v-if="location.nom_gerant && location.prenom_gerant">
+                <p>{{ location.nom_gerant }}</p>
+                <p>{{ location.prenom_gerant }}</p>
+            </div>
+            <div v-else>
+                <p><em>Aucun gérant</em></p>
+            </div>
+        </div>
+
         <div class="location-actions">
           <button @click="openClientModal(location.id_client)">👤</button>
           <button @click="openVeloModal(location.id_velo)">🚲</button>
@@ -161,13 +185,17 @@
         filteredLocations() {
             const query = this.searchQuery.toLowerCase();
             return this.locations_list.filter(loc => {
-            return (
-                loc.nom.toLowerCase().includes(query) ||
-                loc.prenom.toLowerCase().includes(query) ||
-                loc.nom_velo.toLowerCase().includes(query)
-            );
+                const nom = loc.nom || '';
+                const prenom = loc.prenom || '';
+                const velo = loc.nom_velo || '';
+                return (
+                nom.toLowerCase().includes(query) ||
+                prenom.toLowerCase().includes(query) ||
+                velo.toLowerCase().includes(query)
+                );
             });
         }
+
     },
     async created() {
       await this.fetchLocations();
