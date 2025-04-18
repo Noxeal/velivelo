@@ -284,46 +284,59 @@
         this.showEditModal = true;
       },
       async confirmEdit() {
-  try {
-    const id_velo = this.editLocationData.id_velo;
-    const id_location_actuelle = this.editLocationData.id_location;
+        try {
+          const id_velo = this.editLocationData.id_velo;
+          const id_location_actuelle = this.editLocationData.id_location;
 
-    const debut_edit = new Date(this.editDateDebut);
-    const fin_edit = new Date(this.editDateFin);
+          const debut_edit = new Date(this.editDateDebut);
+          const fin_edit = new Date(this.editDateFin);
 
-    const conflit = this.locations_list.some(loc => {
-      if (loc.id_location === id_location_actuelle) return false;
-      if (loc.id_velo !== id_velo) return false;
+          // 1. Vérifier les conflits de date
+          const conflit = this.locations_list.some(loc => {
+            if (loc.id_location === id_location_actuelle) return false;
+            if (loc.id_velo !== id_velo) return false;
 
-      const loc_debut = new Date(loc.date_debut);
-      const loc_fin = new Date(loc.date_fin_estimee);
+            const loc_debut = new Date(loc.date_debut);
+            const loc_fin = new Date(loc.date_fin_estimee);
 
-      return (
-        (debut_edit <= loc_fin && fin_edit >= loc_debut)
-      );
-    });
+            return (debut_edit <= loc_fin && fin_edit >= loc_debut);
+          });
 
-    if (conflit) {
-      alert("Impossible de modifier : une autre location pour ce vélo existe déjà à ces dates.");
-      return;
-    }
-    await fetch(`http://localhost:3000/location/${id_location_actuelle}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        date_debut: this.editDateDebut,
-        date_fin_estimee: this.editDateFin,
-        etat: this.editEtat
-      })
-    });
+          if (conflit) {
+            alert("Impossible de modifier : une autre location pour ce vélo existe déjà à ces dates.");
+            return;
+          }
 
-    this.closeModal();
-    await this.fetchLocations();
+          // 2. Calculer le prix total
+          const msInDay = 1000 * 60 * 60 * 24;
+          const diffDays = Math.floor((fin_edit - debut_edit) / msInDay) + 1;
+          const prixTotal = this.editLocationData.prix * diffDays;
 
-  } catch (err) {
-    console.error('Erreur modification :', err);
-  }
-},
+          // 3. Vérifier le paiement actuel
+          if (this.editPaiementActuel > prixTotal) {
+            alert(`Le paiement actuel (${this.editPaiementActuel} €) dépasse le prix total à payer (${prixTotal.toFixed(2)} €).`);
+            return;
+          }
+
+          // 4. Si tout est bon, envoyer la requête
+          await fetch(`http://localhost:3000/location/${id_location_actuelle}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              date_debut: this.editDateDebut,
+              date_fin_estimee: this.editDateFin,
+              etat: this.editEtat,
+              paiement_actuel: this.editPaiementActuel,
+            })
+          });
+
+          this.closeModal();
+          await this.fetchLocations();
+
+        } catch (err) {
+          console.error('Erreur modification :', err);
+        }
+      },
       calculateTotalPrice(location) {
         const debut = new Date(location.date_debut);
         const fin = new Date(location.date_fin_estimee);
