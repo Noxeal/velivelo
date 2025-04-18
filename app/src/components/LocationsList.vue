@@ -135,7 +135,7 @@
             <option value="Annulée">Annulée</option>
           </select>
         </div>
-          <div class="form-group" v-if="location.etat == 'En Attente'">
+          <div class="form-group" v-if="editLocationData && editLocationData.etat == 'En Attente'">
             <label for="date-debut">Date de début :</label>
             <input
               id="date-debut"
@@ -144,7 +144,7 @@
               required
             />
           </div>
-          <div class="form-group" v-if="location.etat != 'Terminée' && location.etat != 'Annulée'">
+          <div class="form-group" v-if="editLocationData && editLocationData.etat != 'Terminée' && editLocationData.etat != 'Annulée'">
             <label for="date-fin">Date de fin estimée :</label>
             <input
               id="date-fin"
