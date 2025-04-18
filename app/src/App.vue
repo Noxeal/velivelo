@@ -74,7 +74,7 @@ const handle_gerant = (bool, val) => {
     @update:change_current_page="change_current_page" />
     <Connection v-if="page == 'Connection'" @update:handle_client="handle_client" 
     @update:change_current_page="change_current_page"/>
-    <Louer @update:change_current_page="change_current_page" :id_client=id_client v-if="page == 'Louer'"/>
+    <Louer @update:change_current_page="change_current_page" :id_client=id_client :is_gerant="is_gerant" v-if="page == 'Louer'"/>
     <ConnectionGerant v-if="page == 'ConnectionGerant'" @update:handle_gerant="handle_gerant" 
     @update:change_current_page="change_current_page"/>
     <BicycleList v-if="page == 'ListeVelos'":bicycle_list="bicycleList" @reload-bicycle-list="reloadBicycles" :is_gerant="is_gerant"/>
