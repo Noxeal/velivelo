@@ -50,10 +50,11 @@
         class="location-item"
         >
 
-        <div class="location-col hoverable" @click="openVeloModal(location.id_velo)">
-          <p>{{ location.id_velo }}</p>
-          <p>{{ location.nom_velo }}</p>
+        <div class="location-col hoverable" @click="openVeloModal(location)">
+            <p>{{ location.id_velo }}</p>
+            <p>{{ location.nom_velo }}</p>
         </div>
+
         <div class="location-col hoverable" @click="openClientModal(location.id_client)">
           <p>{{ location.nom_client }}</p>
           <p>{{ location.prenom_client }}</p>
@@ -100,8 +101,9 @@
   
       <!-- Modales existantes -->
       <Modal v-if="showVeloModal" @close="closeModal">
-        <BicycleCard :id="selectedVeloId" :is_list_element="false" />
+        <BicycleCard :bicycle="selectedBicycle" :is_list_element="false" />
       </Modal>
+
       <Modal v-if="showClientModal" @close="closeModal">
         <ClientCard :id="selectedClientId" />
       </Modal>
@@ -162,7 +164,11 @@
         id_client: {
             type: Number,
             default: null
-        }
+        },
+        bicycle_list: {
+            type : Array,
+            required : true,
+        },
     },
 
     data() {
@@ -172,6 +178,7 @@
         selectedVeloId: null,
         showClientModal: false,
         selectedClientId: null,
+        selectedBicycle: null,
         showDeleteModal: false,
         deleteId: null,
         showEditModal: false,
@@ -222,9 +229,15 @@
       formatDate(dateStr) {
         return new Date(dateStr).toLocaleDateString('fr-FR');
       },
-      openVeloModal(id) {
-        this.selectedVeloId = id;
-        this.showVeloModal = true;
+      openVeloModal(location) {
+        // On récupère l'objet bicycle dont l'id correspond à la location
+        const bike = this.bicycle_list.find(b => b.id === location.id_velo)
+        if (!bike) {
+            console.warn(`Vélo introuvable pour l'ID ${location.id_velo}`)
+            return
+        }
+        this.selectedBicycle = bike
+        this.showVeloModal = true
       },
       openClientModal(id) {
         this.selectedClientId = id;
