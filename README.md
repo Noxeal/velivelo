@@ -61,8 +61,10 @@ npm run dev
 Le frontend est accessible sur `http://localhost:5173` (ou selon le port affiché).
 
 
-📌 Principales routes disponibles
-Clients
+## 📌 Principales routes disponibles
+
+
+### Clients
 
     GET /client/ : Liste des clients
 
@@ -80,7 +82,7 @@ Clients
 
     PUT /compte/:id : Mise à jour d’un compte avec vérification du mot de passe
 
-Gérants
+### Gérants
 
     GET /gerant/ : Liste des gérants
 
@@ -88,7 +90,7 @@ Gérants
 
     POST /se_connecter_gerant : Connexion gérant
 
-Vélos
+### Vélos
 
     GET /velo/ : Liste des vélos
 
