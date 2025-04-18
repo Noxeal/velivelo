@@ -601,10 +601,11 @@ app.get('/location_list/', async (req, res) => {
 			date_fin_estimee,
 			prix,
 			paiement_actuel,
+			Gerant.id AS id_gerant,
 			Gerant.nom AS nom_gerant,
 			Gerant.prenom AS prenom_gerant
-		FROM Location 
-		JOIN Client ON Location.id_client = Client.id 
+		FROM Location
+		JOIN Client ON Location.id_client = Client.id
 		JOIN Velo ON Location.id_velo = Velo.id
 		LEFT JOIN Gerant ON Location.id_gerant = Gerant.id;
 	`);

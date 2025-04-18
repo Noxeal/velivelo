@@ -9,6 +9,10 @@
             placeholder="Rechercher par nom du client ou vélo..."
         />
       </div>
+      <label v-if="is_gerant" class="gerant-checkbox">
+        <input type="checkbox" v-model="showOnlyMine" />
+        Voir uniquement mes locations
+      </label>
   
       <!-- Header -->
       <div class="location-item header">
@@ -87,8 +91,8 @@
         <div class="location-actions">
           <button @click="openClientModal(location.id_client)">👤</button>
           <button @click="openVeloModal(location)">🚲</button>
-          <button v-if="is_gerant" @click="openEditModal(location)">✏️</button>
-          <button v-if="is_gerant" @click="openDeleteModal(location.id_location)">🗑️</button>
+          <button @click="openEditModal(location)">✏️</button>
+          <button @click="openDeleteModal(location.id_location)">🗑️</button>
         </div>
       </div>
   
@@ -169,6 +173,10 @@
             type : Array,
             required : true,
         },
+        id_gerant: {
+            type: Number,
+            default: null
+        }
     },
 
     data() {
@@ -192,15 +200,23 @@
     computed: {
         filteredLocations() {
             const query = this.searchQuery.toLowerCase();
+
             return this.locations_list.filter(loc => {
-                const nom = loc.nom || '';
-                const prenom = loc.prenom || '';
-                const velo = loc.nom_velo || '';
-                return (
+            const nom = loc.nom_client || '';
+            const prenom = loc.prenom_client || '';
+            const velo = loc.nom_velo || '';
+
+            const matchesSearch =
                 nom.toLowerCase().includes(query) ||
                 prenom.toLowerCase().includes(query) ||
-                velo.toLowerCase().includes(query)
-                );
+                velo.toLowerCase().includes(query);
+
+            const matchesGerant = !this.showOnlyMine || loc.id_gerant === this.id_gerant;
+
+            console.log('id_gerant:', this.id_gerant);
+            console.log('loc id_gerant', loc.id_gerant);
+
+            return matchesSearch && matchesGerant;
             });
         }
 
@@ -432,6 +448,16 @@
   border: 1px solid var(--color-dark-blue);
   width: 300px;
 }
+
+.gerant-checkbox {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: bold;
+  color: var(--color-dark-blue);
+}
+
 
   </style>
   
