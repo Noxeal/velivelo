@@ -126,10 +126,61 @@ app.delete('/client/:id', async (req, res) => {
   
 
 
-app.post('/client/', async (req, res) => {
+  app.post('/client/', async (req, res) => {
 	const { fname, surname, email, password } = req.body;
+
 	try {
-		const clients = await db.query(`INSERT INTO Client (prenom, nom, email, mot_de_passe) VALUES ($1, $2, $3, $4) RETURNING id;`,[fname, surname, email, password]);
+		const insertClient = await db.query(
+			`INSERT INTO Client (prenom, nom, email, mot_de_passe) 
+			 VALUES ($1, $2, $3, $4) 
+			 RETURNING id;`,
+			[fname, surname, email, password]
+		);
+
+		res.send({
+			id_client: insertClient.rows[0].id,
+			success: true,
+			message: "Client créé avec succès !",
+		});
+	} catch (err) {
+		if (err.code === '23505') {
+			try {
+				const existing = await db.query(
+					`SELECT id, mot_de_passe FROM Client WHERE email = $1;`,
+					[email]
+				);
+
+				if (existing.rows.length && existing.rows[0].mot_de_passe === null) {
+					await db.query(
+						`UPDATE Client SET mot_de_passe = $1, prenom = $2, nom = $3 WHERE email = $4;`,
+						[password, fname,surname,email]
+					);
+
+					res.send({
+						id_client: existing.rows[0].id,
+						success: true,
+						message: "Mot de passe mis à jour pour le client existant.",
+					});
+				} else {
+					res.status(400).send("Cet email est déjà utilisé.");
+				}
+			} catch (innerErr) {
+				console.error(innerErr);
+				res.status(500).send("Erreur lors de la mise à jour du mot de passe.");
+			}
+		} else {
+			console.error(err);
+			res.status(500).send("Erreur lors de la création du client.");
+		}
+	}
+});
+
+
+app.post('/profil_client/', async (req, res) => {
+	const { prenom, nom, email } = req.body;
+	console.log(prenom, nom, email);
+	try {
+		const clients = await db.query(`INSERT INTO Client (prenom, nom, email) VALUES ($1, $2, $3) RETURNING id;`,[prenom, nom, email]);
 		res.send({
 			id_client: clients.rows[0].id,
 			success: true,
