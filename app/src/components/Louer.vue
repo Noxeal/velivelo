@@ -9,16 +9,24 @@ export default {
   },
   props: {
     id_client: {
-      type: Number,
       required: true
+    },
+    is_gerant: {
+      required:true,
+      type: Boolean
+    },
+    id_gerant:{
+      required:true
     }
   },
   data() {
     return {
       date_debut: null,
       date_fin: null,
-      datesBloquees: ["2025-04-20", "2025-04-25", "2025-05-01"],
+      id_client_selectionne: null,
+      datesBloquees: [],
       bicycleList: [],
+      clients_list: [],
       velo: null,
       message: "",
       success: false
@@ -37,7 +45,8 @@ export default {
   },
   async mounted() {
     try {
-      this.fetchVelosDisponibles();
+      await this.fetchVelosDisponibles();
+      await this.fetchClients();
     } catch (error) {
       console.error('Erreur lors de la récupération des vélos :', error);
     }
@@ -71,6 +80,15 @@ export default {
     },
     veloExiste(id) {
       return this.bicycleList.some(bicycle => bicycle.id === id);
+    },
+    async fetchClients() {
+      try {
+        const res = await fetch('http://localhost:3000/client/');
+        const data = await res.json();
+        if (Array.isArray(data)) this.clients_list = data;
+      } catch (err) {
+        console.error('Erreur récupération clients :', err);
+      }
     },
     async reloadVelo(date) {
       const response = await fetch("http://localhost:3000/velos_disponibles/date", {
@@ -145,7 +163,37 @@ export default {
         this.message = "Erreur lors de la location : " + error.message;
         this.success = false;
       }
+    },
+    async loue_gerant() {
+      try {
+        const response = await fetch("http://localhost:3000/location_par_gerant", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            date_debut: this.date_debut,
+            date_fin: this.date_fin,
+            id_velo: this.velo,
+            id_client: this.id_client_selectionne,
+            id_gerant: this.id_gerant
+          })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || `Erreur HTTP : ${response.status}`);
+        }
+
+        this.date_debut = "";
+        this.date_fin = "";
+        this.velo = "";
+        this.$emit('update:change_current_page', 'ListeVelos');
+      } catch (error) {
+        console.error("Erreur lors de la location par le gérant :", error);
+        this.message = "Erreur lors de la location : " + error.message;
+        this.success = false;
+      }
     }
+
   }
 };
 </script>
@@ -164,14 +212,31 @@ export default {
       <Datepicker id="date_fin" v-model="date_fin" :min="date_debut" :disabled-date="isDisabled" />
     </div>
 
+    <div v-if="is_gerant" class="input-row">
+      <label for="client-select">Client :</label>
+      <select id="client-select" v-model="id_client_selectionne">
+        <option disabled value="">-- Sélectionner un client --</option>
+        <option v-for="client in clients_list" :key="client.id" :value="client.id">
+          {{ client.nom }} {{ client.prenom }}
+        </option>
+      </select>
+    </div>
+
     <div v-if="prixTotal > 0" class="prix">
       Prix total : <strong>{{ prixTotal }} €</strong>
     </div>
 
     <div style="text-align: center; margin-top: 20px;">
-      <button
+      <button v-if="!is_gerant"
         :disabled="!date_debut || !date_fin || !velo"
         @click="loue"
+        style="padding: 10px 20px; font-size: 16px; background-color: #42b983; color: white; border: none; border-radius: 5px; cursor:pointer"
+      >
+        Louer
+      </button>
+      <button v-if="is_gerant"
+        :disabled="!date_debut || !date_fin || !velo"
+        @click="loue_gerant"
         style="padding: 10px 20px; font-size: 16px; background-color: #42b983; color: white; border: none; border-radius: 5px; cursor:pointer"
       >
         Louer
@@ -287,6 +352,14 @@ p.error {
   color: #2c3e50;
   text-align: center;
   margin-top: 10px;
+}
+
+.input-row select {
+  width: 250px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
 }
 
 </style>
