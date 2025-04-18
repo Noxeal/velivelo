@@ -30,10 +30,16 @@
         <!-- Champ conditionnel avec validation -->
         <div class="form-group" v-if="bicycle.maintenance">
           <label>État de maintenance</label>
-          <input
+          <select
             v-model="bicycle.etat_maintenance"
-            @input="validateEtatMaintenance"
-          />
+            @change="validateEtatMaintenance"
+            class="form-control"
+          >
+            <option disabled value="">-- Sélectionner un état --</option>
+            <option value="En attente de pièce">En attente de pièce</option>
+            <option value="En réparation">En réparation</option>
+            <option value="Fin de maintenance">Fin de maintenance</option>
+          </select>
           <p v-if="etatMaintenanceError" class="error-msg">{{ etatMaintenanceError }}</p>
         </div>
 

@@ -13,53 +13,21 @@
         <button v-if="can_modify" class="update-button" @click.stop="showUpdateModal = true">Modifier</button>
       </div>
   
-      <!-- Modale de mise à jour -->
-      <Modal v-if="showUpdateModal" @close="showUpdateModal = false">
-        <h2>Modifier le vélo</h2>
-        <form @submit.prevent="updateBicycle">
-          <div class="form-group">
-            <label>Nom</label>
-            <input v-model="bicycle.nom" required />
-          </div>
-          <div class="form-group">
-            <label>Description</label>
-            <input v-model="bicycle.description" />
-          </div>
-          <div class="form-group">
-            <label>État</label>
-            <input v-model="bicycle.etat" />
-          </div>
-          <div class="form-group">
-            <label>Maintenance</label>
-            <input type="checkbox" v-model="bicycle.maintenance" />
-          </div>
-          <div v-if="bicycle.maintenance" class="form-group">
-            <label>État de maintenance</label>
-            <input v-model="bicycle.etat_maintenance" />
-          </div>
-          <div class="form-group">
-            <label>Type</label>
-            <input v-model="bicycle.type" />
-          </div>
-          <div class="form-group">
-            <label>Année de mise en service</label>
-            <input type="number" v-model="bicycle.annee_mise_en_service" />
-          </div>
-          <div class="form-group">
-            <label>Photo (nom de fichier)</label>
-            <input v-model="bicycle.photo" />
-          </div>
-          <button type="submit" class="submit-button">Enregistrer</button>
-        </form>
-      </Modal>
+      <BicycleEditModal
+        v-if="showUpdateModal"
+        :bicycle="bicycle"
+        @close="showUpdateModal = false"
+        @update-complete="$emit('update-complete')"
+      />
     </div>
   </template>
   
   <script>
   import Modal from '@/components/commons/Modal.vue';
+  import BicycleEditModal from '@/components/commons/BicycleEditModal.vue';
   
   export default {
-    components: { Modal },
+    components: { Modal, BicycleEditModal },
     props: {
       bicycle: Object,
       is_list_element: Boolean,
