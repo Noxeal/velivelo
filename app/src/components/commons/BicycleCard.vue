@@ -1,8 +1,5 @@
 <template>
     <div :class="['bicycle-infos', { selected: selected }]">
-      <div class="photo">
-        <img :src="photoUrl" alt="Photo du vélo" v-if="bicycle.photo" />
-      </div>
         <div class="bicycle-card-container">
             <div class="bicycle-basic-card">
                 <div class="photo">
