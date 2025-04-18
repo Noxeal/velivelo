@@ -59,3 +59,47 @@ npm run dev
 ```
 
 Le frontend est accessible sur `http://localhost:5173` (ou selon le port affiché).
+
+
+📌 Principales routes disponibles
+Clients
+
+    GET /client/ : Liste des clients
+
+    GET /client/:id : Détails d’un client
+
+    POST /client/ : Création d’un client
+
+    PUT /client/:id : Mise à jour d’un client
+
+    DELETE /client/:id : Suppression d’un client
+
+    POST /se_connecter : Connexion client
+
+    POST /profil_client/ : Création sans mot de passe (connexion simplifiée)
+
+    PUT /compte/:id : Mise à jour d’un compte avec vérification du mot de passe
+
+Gérants
+
+    GET /gerant/ : Liste des gérants
+
+    GET /gerant/:id : Détail d’un gérant
+
+    POST /se_connecter_gerant : Connexion gérant
+
+Vélos
+
+    GET /velo/ : Liste des vélos
+
+    GET /velo/:id : Détail d’un vélo
+
+    POST /velo/ : Création d’un vélo
+
+    PUT /velo/:id : Mise à jour d’un vélo
+
+    GET /velos_disponibles/ : Liste des vélos disponibles
+
+    POST /velos_disponibles/date : Vélos disponibles pour une date donnée
+
+    POST /velos_disponibles/double_dates : Vélos disponibles entre deux dates
