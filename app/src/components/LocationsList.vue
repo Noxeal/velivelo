@@ -1,12 +1,12 @@
 <template>
     <div class="locations-list">
       <h1>Liste des locations</h1>
-
+  
       <div class="filters">
         <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Rechercher par nom du client ou vélo..."
+          v-model="searchQuery"
+          type="text"
+          placeholder="Rechercher par nom du client ou vélo..."
         />
       </div>
       <label v-if="is_gerant" class="gerant-checkbox">
@@ -52,13 +52,13 @@
         v-for="location in filteredLocations"
         :key="location.id_location"
         class="location-item"
-        >
-
+      >
+  
         <div class="location-col hoverable" @click="openVeloModal(location)">
-            <p>{{ location.id_velo }}</p>
-            <p>{{ location.nom_velo }}</p>
+          <p>{{ location.id_velo }}</p>
+          <p>{{ location.nom_velo }}</p>
         </div>
-
+  
         <div class="location-col hoverable" @click="openClientModal(location.id_client)">
           <p>{{ location.nom_client }}</p>
           <p>{{ location.prenom_client }}</p>
@@ -73,21 +73,21 @@
           <p>{{ formatDate(location.date_fin_estimee) }}</p>
         </div>
         <div class="location-col">
-            <p>{{ calculateTotalPrice(location) }} €</p>
+          <p>{{ calculateTotalPrice(location) }} €</p>
         </div>
         <div class="location-col">
           <p>{{ location.paiement_actuel }}</p>
         </div>
         <div class="location-col">
-            <div v-if="location.nom_gerant && location.prenom_gerant">
-                <p>{{ location.nom_gerant }}</p>
-                <p>{{ location.prenom_gerant }}</p>
-            </div>
-            <div v-else>
-                <p><em>Aucun gérant</em></p>
-            </div>
+          <div v-if="location.nom_gerant && location.prenom_gerant">
+            <p>{{ location.nom_gerant }}</p>
+            <p>{{ location.prenom_gerant }}</p>
+          </div>
+          <div v-else>
+            <p><em>Aucun gérant</em></p>
+          </div>
         </div>
-
+  
         <div class="location-actions">
           <button @click="openClientModal(location.id_client)">👤</button>
           <button @click="openVeloModal(location)">🚲</button>
@@ -107,7 +107,7 @@
       <Modal v-if="showVeloModal" @close="closeModal">
         <BicycleCard :bicycle="selectedBicycle" :is_list_element="false" />
       </Modal>
-
+  
       <Modal v-if="showClientModal" @close="closeModal">
         <ClientCard :id="selectedClientId" />
       </Modal>
@@ -122,18 +122,18 @@
         </div>
       </Modal>
   
-      <!-- Modal d'édition des dates -->
+      <!-- Modal d'édition des dates et paiement -->
       <Modal v-if="showEditModal" @close="closeModal">
-        <h2>Modifier les dates de location</h2>
+        <h2>Modifier les détails de la location</h2>
         <form @submit.prevent="confirmEdit">
           <div class="form-group">
-          <label for="etat">État de la location :</label>
-          <select id="etat" v-model="editEtat" required>
-            <option value="En Cours">En Cours</option>
-            <option value="terminée">Terminée</option>
-            <option value="annulée">Annulée</option>
-          </select>
-        </div>
+            <label for="etat">État de la location :</label>
+            <select id="etat" v-model="editEtat" required>
+              <option value="En Cours">En Cours</option>
+              <option value="Terminée">Terminée</option>
+              <option value="Annulée">Annulée</option>
+            </select>
+          </div>
           <div class="form-group">
             <label for="date-debut">Date de début :</label>
             <input
@@ -149,6 +149,15 @@
               id="date-fin"
               type="date"
               v-model="editDateFin"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="paiement-actuel">Paiement actuel :</label>
+            <input
+              id="paiement-actuel"
+              type="number"
+              v-model.number="editPaiementActuel"
               required
             />
           </div>
@@ -169,24 +178,11 @@
   export default {
     components: { BicycleCard, ClientCard, Modal },
     props: {
-        is_gerant: {
-            type: Boolean,
-            default: false
-        },
-        id_client: {
-            type: Number,
-            default: null
-        },
-        bicycle_list: {
-            type : Array,
-            required : true,
-        },
-        id_gerant: {
-            type: Number,
-            default: null
-        }
+      is_gerant: { type: Boolean, default: false },
+      id_client: { type: Number, default: null },
+      bicycle_list: { type: Array, required: true },
+      id_gerant: { type: Number, default: null }
     },
-
     data() {
       return {
         locations_list: [],
@@ -203,68 +199,57 @@
         editDateDebut: '',
         editDateFin: '',
         editEtat: '',
-        searchQuery: '',
+        editPaiementActuel: 0,
+        searchQuery: ''
       };
     },
     computed: {
-        filteredLocations() {
-            const query = this.searchQuery.toLowerCase();
-
-            return this.locations_list.filter(loc => {
-            const nom = loc.nom_client || '';
-            const prenom = loc.prenom_client || '';
-            const velo = loc.nom_velo || '';
-
-            const matchesSearch =
-                nom.toLowerCase().includes(query) ||
-                prenom.toLowerCase().includes(query) ||
-                velo.toLowerCase().includes(query);
-
-            const matchesGerant = !this.showOnlyMine || loc.id_gerant === this.id_gerant;
-
-            console.log('id_gerant:', this.id_gerant);
-            console.log('loc id_gerant', loc.id_gerant);
-
-            return matchesSearch && matchesGerant;
-            });
-        }
-
+      filteredLocations() {
+        const query = this.searchQuery.toLowerCase();
+        return this.locations_list.filter(loc => {
+          const nom = loc.nom_client || '';
+          const prenom = loc.prenom_client || '';
+          const velo = loc.nom_velo || '';
+          const matchesSearch =
+            nom.toLowerCase().includes(query) ||
+            prenom.toLowerCase().includes(query) ||
+            velo.toLowerCase().includes(query);
+          const matchesGerant = !this.showOnlyMine || loc.id_gerant === this.id_gerant;
+          return matchesSearch && matchesGerant;
+        });
+      }
     },
     async created() {
       await this.fetchLocations();
     },
     methods: {
-        async fetchLocations() {
-            try {
-            let url = '';
-
-            if (this.is_gerant) {
+      async fetchLocations() {
+        try {
+          let url = '';
+          if (this.is_gerant) {
             url = 'http://localhost:3000/location_list/';
-            } else if (this.id_client !== null) {
+          } else if (this.id_client !== null) {
             url = `http://localhost:3000/location_list/client/${this.id_client}`;
-            }
-
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
-            const data = await res.json();
-            if (Array.isArray(data)) this.locations_list = data;
-            } catch (err) {
-            console.error('Erreur récupération locations :', err);
+          }
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`Erreur HTTP : ${res.status}`);
+          const data = await res.json();
+          if (Array.isArray(data)) this.locations_list = data;
+        } catch (err) {
+          console.error('Erreur récupération locations :', err);
         }
-    
       },
       formatDate(dateStr) {
         return new Date(dateStr).toLocaleDateString('fr-FR');
       },
       openVeloModal(location) {
-        // On récupère l'objet bicycle dont l'id correspond à la location
-        const bike = this.bicycle_list.find(b => b.id === location.id_velo)
+        const bike = this.bicycle_list.find(b => b.id === location.id_velo);
         if (!bike) {
-            console.warn(`Vélo introuvable pour l'ID ${location.id_velo}`)
-            return
+          console.warn(`Vélo introuvable pour l'ID ${location.id_velo}`);
+          return;
         }
-        this.selectedBicycle = bike
-        this.showVeloModal = true
+        this.selectedBicycle = bike;
+        this.showVeloModal = true;
       },
       openClientModal(id) {
         this.selectedClientId = id;
@@ -284,25 +269,19 @@
         }
       },
       openEditModal(location) {
-  this.editLocationData = location;
-
-  const toLocalDate = (isoDateStr) => {
-    const date = new Date(isoDateStr);
-    const offset = date.getTimezoneOffset();
-    date.setMinutes(date.getMinutes() - offset);
-    return date.toISOString().split('T')[0];
-  };
-
-  this.editDateDebut = toLocalDate(location.date_debut);
-  this.editDateFin = toLocalDate(location.date_fin_estimee);
-
-  this.editEtat = location.etat;
-
-  console.log(this.editEtat);
-
-  this.showEditModal = true;
-}
-,
+        this.editLocationData = location;
+        const toLocalDate = (isoDateStr) => {
+          const date = new Date(isoDateStr);
+          const offset = date.getTimezoneOffset();
+          date.setMinutes(date.getMinutes() - offset);
+          return date.toISOString().split('T')[0];
+        };
+        this.editDateDebut = toLocalDate(location.date_debut);
+        this.editDateFin = toLocalDate(location.date_fin_estimee);
+        this.editEtat = location.etat;
+        this.editPaiementActuel = location.paiement_actuel;
+        this.showEditModal = true;
+      },
       async confirmEdit() {
         try {
           await fetch(`http://localhost:3000/location/${this.editLocationData.id_location}`, {
@@ -311,7 +290,8 @@
             body: JSON.stringify({
               date_debut: this.editDateDebut,
               date_fin_estimee: this.editDateFin,
-              etat: this.editEtat
+              etat: this.editEtat,
+              paiement_actuel: this.editPaiementActuel
             })
           });
           this.closeModal();
@@ -321,14 +301,11 @@
         }
       },
       calculateTotalPrice(location) {
-        const debut = new Date(location.date_debut)
-        const fin   = new Date(location.date_fin_estimee)
-        const msInDay = 1000 * 60 * 60 * 24
-
-        // Nombre de jours « plein », puis +1 pour inclure le jour de début
-        const diffDays = Math.floor((fin - debut) / msInDay) + 1
-
-        return (location.prix * diffDays).toFixed(2)
+        const debut = new Date(location.date_debut);
+        const fin = new Date(location.date_fin_estimee);
+        const msInDay = 1000 * 60 * 60 * 24;
+        const diffDays = Math.floor((fin - debut) / msInDay) + 1;
+        return (location.prix * diffDays).toFixed(2);
       },
       closeModal() {
         this.showVeloModal = false;
@@ -341,6 +318,8 @@
         this.editLocationData = null;
         this.editDateDebut = '';
         this.editDateFin = '';
+        this.editEtat = '';
+        this.editPaiementActuel = 0;
       }
     }
   };
@@ -451,29 +430,27 @@
     background-color: var(--color-soft-blue);
     color: white;
   }
-
+  
   .filters {
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: center;
-}
-
-.filters input {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--color-dark-blue);
-  width: 300px;
-}
-
-.gerant-checkbox {
-  margin-left: 20px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: bold;
-  color: var(--color-dark-blue);
-}
-
-
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .filters input {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-dark-blue);
+    width: 300px;
+  }
+  
+  .gerant-checkbox {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+    color: var(--color-dark-blue);
+  }
   </style>
   
