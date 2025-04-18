@@ -8,7 +8,7 @@
         type="text"
         placeholder="Rechercher un vélo..."
       />
-      <AddBicycle v-if="is_gerant" />
+      <AddBicycle v-if="is_gerant" @bicycle-added="reloadBicycles" />
     </div>
 
     <div
@@ -17,14 +17,27 @@
       @click="openModal(bicycle)"
       class="bicycle-card-wrapper"
     >
-      <BicycleCard :bicycle="bicycle" :can_modify="false" :is_list_element="true" @update-complete="reloadBicycles" />
+      <BicycleCard
+        :bicycle="bicycle"
+        :can_modify="false"
+        :is_list_element="true"
+        @update-complete="reloadBicycles"
+      />
     </div>
 
     <!-- Modale -->
     <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <button class="modal-close" @click="closeModal">×</button>
-        <BicycleCard :bicycle="selectedBicycle" :can_modify=is_gerant :is_list_element="false" :is_gerant="is_gerant" @update-complete="reloadBicycles" />
+
+        <BicycleCard
+          :bicycle="selectedBicycle"
+          :can_modify="is_gerant"
+          :is_list_element="false"
+          :is_gerant="is_gerant"
+          @update-complete="reloadBicycles"
+          @bicycle-deleted="handleDeletion"
+        />
       </div>
     </div>
   </div>
@@ -45,6 +58,7 @@ export default {
     return {
       isModalOpen: false,
       selectedBicycle: null,
+      deleteId: null,
       searchQuery: ''
     };
   },
@@ -61,15 +75,21 @@ export default {
   methods: {
     openModal(bicycle) {
       this.selectedBicycle = bicycle;
+      this.deleteId = bicycle.id;
       this.isModalOpen = true;
     },
     closeModal() {
       this.isModalOpen = false;
       this.selectedBicycle = null;
+      this.deleteId = null;
     },
     reloadBicycles() {
       this.$emit("reload-bicycle-list");
-    }
+    },
+    handleDeletion() {
+    this.closeModal();
+    this.reloadBicycles();
+  }
   }
 };
 </script>
@@ -127,6 +147,17 @@ export default {
   cursor: pointer;
 }
 
+.delete-button {
+  margin-top: 1.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
 .filters {
   width: 100%;
   display: flex;
@@ -142,10 +173,9 @@ export default {
 }
 
 h1 {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: var(--color-dark-blue);
-  }
-
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: var(--color-dark-blue);
+}
 </style>

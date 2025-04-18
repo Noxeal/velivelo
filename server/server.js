@@ -564,9 +564,21 @@ app.put('/velo/update_photo/:id', async (req, res) => {
 });
 
 app.delete('/velo/:id', async (req, res) => {
-	await db.query(`DELETE FROM Velo where id = ${req.params.id};`)
-	res.send("ça marche !");
-});
+	const id = req.params.id;
+  
+	try {
+	  const result = await db.query(`SELECT * FROM Location WHERE id_velo = $1`, [id]);
+  
+	  if (result.rows.length > 0) {
+		return res.status(400).send("Ce vélo est encore utilisé dans une location et ne peut pas être supprimé.");
+	  }
+	  await db.query(`DELETE FROM Velo WHERE id = $1`, [id]);
+	  res.send("Vélo supprimé avec succès !");
+	} catch (err) {
+	  console.error(err);
+	  res.status(500).send("Erreur serveur pendant la suppression du vélo.");
+	}
+  });
 
 // Locations
 
