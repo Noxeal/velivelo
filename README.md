@@ -30,7 +30,7 @@ cd velivelo
 
 ### 2. Configuration de la base de données
 
-Dans PostgreSQL, crée une base et un schéma `velivelo`, puis exécuter le script présent dans /server/, nommé script_base_init.
+Dans PostgreSQL, créer une base et un schéma `velivelo`, puis exécuter le script présent dans /server/, nommé script_base_init.
 
 ### 3. Configuration des variables d’environnement
 
@@ -48,6 +48,7 @@ npm install
 node server.js
 ```
 Le backend tourne sur `http://localhost:3000`.
+Ensuite, ouvrir un autre terminal et retourner à la racine du projet pour lancer le frontend.
 
 ### 5. Lancer le frontend
 
