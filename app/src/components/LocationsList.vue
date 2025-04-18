@@ -92,7 +92,7 @@
           <button @click="openClientModal(location.id_client)">👤</button>
           <button @click="openVeloModal(location)">🚲</button>
           <button @click="openEditModal(location)">✏️</button>
-          <button v-if="location.etat == 'En attente'" @click="openDeleteModal(location.id_location)">🗑️</button>
+          <button v-if="location.etat == 'En Attente'" @click="openDeleteModal(location.id_location)">🗑️</button>
         </div>
       </div>
   
