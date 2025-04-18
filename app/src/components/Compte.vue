@@ -26,19 +26,15 @@ export default {
   },
   async created() {
   if (this.is_gerant) {
-    console.log(this.is_gerant)
     await this.fetchGerant();
   } else {
-    console.log(this.is_gerant)
     await this.fetchUser();
   }
 },
   methods: {
     async fetchUser() {
       try {
-        console.log(this.id_client);
         const response = await fetch(`http://localhost:3000/client/${this.id_client}`);
-        console.log("I hope you die in a fire");
         if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
         const data = await response.json();
         this.user = data;
@@ -56,8 +52,6 @@ export default {
     },
     async fetchGerant() {
     try {
-        console.log('blabla');
-        console.log("ID du gérant utilisé :", this.id_gerant);
         const response = await fetch(`http://localhost:3000/gerant/${this.id_gerant}`);
         if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
         const data = await response.json();
@@ -77,7 +71,6 @@ export default {
     },
     async saveChanges() {
       try {
-        console.log("Mot de passe actuel :", this.editedUser.old_password);
         const response = await fetch(`http://localhost:3000/compte/${this.id_client}`, {
         method: 'PUT',
         headers: {

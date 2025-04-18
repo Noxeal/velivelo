@@ -140,7 +140,6 @@
       },
       openEditModal(client) {
         this.editClientData = client;
-        console.log('Client à modifier :', client, 'ID :', client.id);
         this.editNom = client.nom;
         this.editPrenom = client.prenom;
         this.editEmail = client.email;

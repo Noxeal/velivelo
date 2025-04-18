@@ -30,9 +30,6 @@ await db.query("SELECT setval('Client_id_seq', COALESCE((SELECT MAX(id) FROM Cli
 await db.query("SELECT setval('Velo_id_seq', COALESCE((SELECT MAX(id) FROM Velo), 1), true);")
 
 
-/*const res = await db.query('SELECT * FROM Client;') 
-console.log(res.rows[0]);*/
-
 // Test 
 
 app.get("/", (req, res) => {
@@ -56,12 +53,6 @@ app.get('/client/:id', async (req, res) => {
 app.put('/client/:id', async (req, res) => {
 	const id = req.params.id;
 	const { nom, prenom, email } = req.body;
-
-	// console.log('Mise à jour du client avec ID:', id);
-	// console.log('Nouveau nom:', nom);
-	// console.log('Nouveau prénom:', prenom);
-	// console.log('Nouvel email:', email);
-
 
 	// Vérification minimale
 	if (!nom || !prenom || !email) {
@@ -178,7 +169,6 @@ app.post('/client/', async (req, res) => {
 
 app.post('/profil_client/', async (req, res) => {
 	const { prenom, nom, email } = req.body;
-	console.log(prenom, nom, email);
 	try {
 		const clients = await db.query(`INSERT INTO Client (prenom, nom, email) VALUES ($1, $2, $3) RETURNING id;`, [prenom, nom, email]);
 		res.send({
@@ -201,7 +191,6 @@ app.post('/profil_client/', async (req, res) => {
 app.put('/compte/:id', async (req, res) => {
 	const { nom, prenom, email, mot_de_passe, old_password } = req.body;
 	const id = req.params.id;
-	console.log(old_password);
 
 	try {
 		const user = await db.query('SELECT * FROM Client WHERE id = $1', [id]);
@@ -210,15 +199,12 @@ app.put('/compte/:id', async (req, res) => {
 			return res.status(404).send("Client non trouvé");
 		}
 
-		console.log(user.rows[0]);
-
 		const current = user.rows[0];
 		const updates = [];
 		const values = [];
 		let paramIndex = 1;
 
 		if (mot_de_passe) {
-			console.log(old_password);
 
 			if (old_password !== user.rows[0].mot_de_passe) {
 				return res.status(403).send("Ancien mot de passe incorrect");
@@ -271,17 +257,14 @@ app.delete('/client/:id', async (req, res) => {
 
 app.post('/se_connecter', async (req, res) => {
 	let account = req.body;
-	console.log(account);
 	let row_client = await db.query(`SELECT id from Client where email = '${account.email}' AND mot_de_passe = '${account.password}';`)
 	if (row_client.rows.length == 0) {
-		console.log("Pas de user");
 		res.send({
 			success: false,
 			message: "Email ou mot de passe incorrect"
 		});
 	}
 	else {
-		console.log("Id client : ", row_client.rows[0]);
 		res.send({
 			id_client: row_client.rows[0].id,
 			success: true,
@@ -292,17 +275,14 @@ app.post('/se_connecter', async (req, res) => {
 
 app.post('/se_connecter_gerant', async (req, res) => {
 	let account = req.body;
-	console.log(account);
 	let row_gerant = await db.query(`SELECT id from Gerant where email = '${account.email}' AND mot_de_passe = '${account.password}';`)
 	if (row_gerant.rows.length == 0) {
-		console.log("Pas de user");
 		res.send({
 			success: false,
 			message: "Email ou mot de passe incorrect"
 		});
 	}
 	else {
-		console.log("Id gerant : ", row_gerant.rows[0]);
 		res.send({
 			id_gerant: row_gerant.rows[0].id,
 			success: true,
@@ -319,7 +299,6 @@ app.get('/gerant/', async (req, res) => {
 });
 
 app.get('/gerant/:id', async (req, res) => {
-	console.log(req.params.id);
 	let clients = await db.query(`SELECT * FROM Gerant where id = ${req.params.id};`)
 	res.send(clients.rows[0]);
 });
@@ -327,26 +306,6 @@ app.get('/gerant/:id', async (req, res) => {
 app.post('/gerant/:id', async (req, res) => {
 	res.body;
 	let clients = await db.query('INSERT INTO Gerant Values ;')
-	res.send(clients.rows[0]);
-});
-
-app.put('/gerant/update_nom/:id', async (req, res) => {
-	let clients = await db.query(`UPDATE Gerant SET nom = ${req.body} where id = ${req.params.id} ;`)
-	res.send(clients.rows[0]);
-});
-
-app.put('/gerant/update_prenom/:id', async (req, res) => {
-	let clients = await db.query(`UPDATE Gerant SET prenom = ${req.body} where id = ${req.params.id} ;`)
-	res.send(clients.rows[0]);
-});
-
-app.put('/gerant/update_email/:id', async (req, res) => {
-	let clients = await db.query(`UPDATE Gerant SET email = ${req.body} where id = ${req.params.id} ;`)
-	res.send(clients.rows[0]);
-});
-
-app.put('/gerant/update_mot_de_passe/:id', async (req, res) => {
-	let clients = await db.query(`UPDATE Gerant mot_de_passe = ${req.body} where id = ${req.params.id} ;`)
 	res.send(clients.rows[0]);
 });
 
@@ -369,16 +328,11 @@ app.get('/velos_disponibles/', async (req, res) => {
 
 app.post('/velos_disponibles/date', async (req, res) => {
 	const { date } = req.body;
-	console.log("date : ", date);
 	const resultNonDispo = await db.query(
 		`SELECT id_velo FROM Location WHERE $1 BETWEEN date_debut AND date_fin_estimee`,
 		[new Date(date)]
 	);
-	console.log("resultNonDispo :", resultNonDispo);
-
 	const idsNonDispo = resultNonDispo.rows.map(row => row.id_velo);
-
-	console.log("idsNonDispo :", idsNonDispo);
 	let velos;
 
 	if (idsNonDispo.length > 0) {
@@ -395,8 +349,6 @@ app.post('/velos_disponibles/date', async (req, res) => {
 
 app.post('/velos_disponibles/double_dates', async (req, res) => {
 	const { date_debut, date_fin } = req.body;
-	console.log("Recherche entre :", date_debut, "et", date_fin);
-
 	try {
 		// 1. Sélection des vélos indisponibles pendant l'intervalle donné
 		const resultNonDispo = await db.query(
@@ -406,7 +358,6 @@ app.post('/velos_disponibles/double_dates', async (req, res) => {
 		);
 
 		const idsNonDispo = resultNonDispo.rows.map(row => row.id_velo);
-		console.log("Vélos non dispo :", idsNonDispo);
 
 		let velos;
 		if (idsNonDispo.length > 0) {
@@ -523,45 +474,6 @@ app.put('/velo/:id', async (req, res) => {
 	}
 });
 
-app.put('/velo/update_etat/:id', async (req, res) => {
-	let velo = await db.query(`UPDATE Velo SET etat = ${req.body} where id = ${req.params.id} ;`)
-	res.send(velo.rows[0]);
-});
-
-app.put('/velo/update_maintenance/:id', async (req, res) => {
-	let velo = await db.query(`UPDATE Velo SET maintenance = ${req.body} where id = ${req.params.id} ;`)
-	res.send(velo.rows[0]);
-});
-
-app.put('/velo/update_type/:id', async (req, res) => {
-	let velo = await db.query(`UPDATE Velo SET type = ${req.body} where id = ${req.params.id} ;`)
-	res.send(velo.rows[0]);
-});
-
-app.put('/velo/update_duree_de_vie/:id', async (req, res) => {
-	let velo = await db.query(`UPDATE Velo SET duree_de_vie = ${req.body} where id = ${req.params.id} ;`)
-	res.send(velo.rows[0]);
-});
-
-app.put('/velo/update_cycle_de_vie/:id', async (req, res) => {
-	let velo = await db.query(`UPDATE Velo SET cycle_de_vie = ${req.body} where id = ${req.params.id} ;`)
-	res.send(velo.rows[0]);
-});
-
-app.put('/velo/update_annee_mise_en_service/:id', async (req, res) => {
-	let velo = await db.query(`UPDATE Velo SET annee_mise_en_service = ${req.body} where id = ${req.params.id} ;`)
-	res.send(velo.rows[0]);
-});
-
-app.put('/velo/update_prix/:id', async (req, res) => {
-	let velo = await db.query(`UPDATE Velo SET prix = ${req.body} where id = ${req.params.id} ;`)
-	res.send(velo.rows[0]);
-});
-
-app.put('/velo/update_photo/:id', async (req, res) => {
-	let velo = await db.query(`UPDATE Velo SET photo = ${req.body} where id = ${req.params.id} ;`)
-	res.send(velo.rows[0]);
-});
 
 app.delete('/velo/:id', async (req, res) => {
 	const id = req.params.id;
@@ -624,7 +536,7 @@ app.get('/location_list/client/:id', async (req, res) => {
 		  Client.id as id_client, 
 		  Client.nom AS nom_client, 
 		  Client.prenom AS prenom_client, 
-		  Velo.Etat, 
+		  Location.Etat, 
 		  date_debut, 
 		  date_fin_estimee,
 		  prix,
@@ -650,16 +562,12 @@ app.get('/location/:id', async (req, res) => {
 
 app.post('/location', async (req, res) => {
 	const { date_debut, date_fin, id_velo, id_client } = req.body;
-	console.log("date debut :", date_debut);
-	console.log("date fin :", date_fin);
-	console.log("id velo :", id_velo);
-	console.log("id client :", id_client);
 	try {
 		const result = await db.query(
 			`INSERT INTO Location (date_debut, date_fin_estimee, paiement_actuel, id_velo, id_client, etat)
 		 VALUES ($1, $2, $3, $4, $5, $6)
 		 RETURNING id;`,
-			[date_debut, date_fin, 0.0, id_velo, id_client, "En Cours"]
+			[date_debut, date_fin, 0.0, id_velo, id_client, "En Attente"]
 		);
 
 		res.send({
@@ -679,19 +587,13 @@ app.post('/location', async (req, res) => {
 
 app.post('/location_par_gerant', async (req, res) => {
 	const { date_debut, date_fin, id_velo, id_client, id_gerant } = req.body;
-	console.log("🛠️ Location par gérant");
-	console.log("Date début :", date_debut);
-	console.log("Date fin :", date_fin);
-	console.log("ID vélo :", id_velo);
-	console.log("ID client :", id_client);
-	console.log("ID gérant :", id_gerant);
 
 	try {
 		const result = await db.query(
 			`INSERT INTO Location (date_debut, date_fin_estimee, paiement_actuel, id_velo, id_client, etat, id_gerant)
 			VALUES ($1, $2, $3, $4, $5, $6, $7)
 			RETURNING id;`,
-			[date_debut, date_fin, 0.0, id_velo, id_client, "En Cours", id_gerant]
+			[date_debut, date_fin, 0.0, id_velo, id_client, "En Attente", id_gerant]
 		);
 
 		res.send({
@@ -733,22 +635,6 @@ app.put('/location/:id', async (req, res) => {
 		console.error('Erreur mise à jour location :', error);
 		res.status(500).send({ message: 'Erreur serveur.' });
 	}
-});
-
-
-app.put('/location/update_date_debut/:id', async (req, res) => {
-	let location = await db.query(`UPDATE Client SET date_debut = ${req.body} where id = ${req.params.id} ;`)
-	res.send(location.rows[0]);
-});
-
-app.put('/location/update_date_fin_estimee/:id', async (req, res) => {
-	let location = await db.query(`UPDATE Client SET date_fin_estimee = ${req.body} where id = ${req.params.id} ;`)
-	res.send(location.rows[0]);
-});
-
-app.put('/location/update_date_rendu/:id', async (req, res) => {
-	let location = await db.query(`UPDATE Client SET date_rendu = ${req.body} where id = ${req.params.id} ;`)
-	res.send(location.rows[0]);
 });
 
 app.delete('/location/:id', async (req, res) => {

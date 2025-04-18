@@ -55,7 +55,6 @@ export default {
         }
 
         const json = await response.json()
-        console.log("Réponse du serveur :", json)
 
         if (!json || !json.id_client) {
           this.errorMessage = "Identifiants incorrects.";

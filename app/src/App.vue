@@ -21,7 +21,6 @@ const bicycleList = ref([])
 
 const fetchBicycles = async () => {
   try {
-    console.log("fetch");
     const response = await fetch('http://localhost:3000/velo')
     if (!response.ok) {
       throw new Error(`Erreur HTTP : ${response.status}`)
@@ -51,7 +50,6 @@ const change_current_page = (newPage) => {
 }
 
 const handle_client = (bool, val) => {
-  console.log("handleConnection");
   is_connected.value = bool;
   id_client.value = val;
 }
