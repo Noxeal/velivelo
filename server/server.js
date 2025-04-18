@@ -567,7 +567,7 @@ app.post('/location', async (req, res) => {
 			`INSERT INTO Location (date_debut, date_fin_estimee, paiement_actuel, id_velo, id_client, etat)
 		 VALUES ($1, $2, $3, $4, $5, $6)
 		 RETURNING id;`,
-			[date_debut, date_fin, 0.0, id_velo, id_client, "En Cours"]
+			[date_debut, date_fin, 0.0, id_velo, id_client, "En Attente"]
 		);
 
 		res.send({
@@ -593,7 +593,7 @@ app.post('/location_par_gerant', async (req, res) => {
 			`INSERT INTO Location (date_debut, date_fin_estimee, paiement_actuel, id_velo, id_client, etat, id_gerant)
 			VALUES ($1, $2, $3, $4, $5, $6, $7)
 			RETURNING id;`,
-			[date_debut, date_fin, 0.0, id_velo, id_client, "En Cours", id_gerant]
+			[date_debut, date_fin, 0.0, id_velo, id_client, "En Attente", id_gerant]
 		);
 
 		res.send({

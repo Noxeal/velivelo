@@ -92,7 +92,7 @@
           <button @click="openClientModal(location.id_client)">👤</button>
           <button @click="openVeloModal(location)">🚲</button>
           <button @click="openEditModal(location)">✏️</button>
-          <button @click="openDeleteModal(location.id_location)">🗑️</button>
+          <button v-if="location.etat == 'En attente'" @click="openDeleteModal(location.id_location)">🗑️</button>
         </div>
       </div>
   
@@ -129,12 +129,13 @@
           <div class="form-group">
           <label for="etat">État de la location :</label>
           <select id="etat" v-model="editEtat" required>
+            <option value="En Attente">En Attente</option>
             <option value="En Cours">En Cours</option>
-            <option value="terminée">Terminée</option>
-            <option value="annulée">Annulée</option>
+            <option value="Terminée">Terminée</option>
+            <option value="Annulée">Annulée</option>
           </select>
         </div>
-          <div class="form-group">
+          <div class="form-group" v-if="location.etat == 'En Attente'">
             <label for="date-debut">Date de début :</label>
             <input
               id="date-debut"
@@ -143,7 +144,7 @@
               required
             />
           </div>
-          <div class="form-group">
+          <div class="form-group" v-if="location.etat != 'Terminée' && location.etat != 'Annulée'">
             <label for="date-fin">Date de fin estimée :</label>
             <input
               id="date-fin"
