@@ -513,10 +513,11 @@ app.get('/location_list/', async (req, res) => {
 			date_fin_estimee,
 			prix,
 			paiement_actuel,
+			Gerant.id AS id_gerant,
 			Gerant.nom AS nom_gerant,
 			Gerant.prenom AS prenom_gerant
-		FROM Location 
-		JOIN Client ON Location.id_client = Client.id 
+		FROM Location
+		JOIN Client ON Location.id_client = Client.id
 		JOIN Velo ON Location.id_velo = Velo.id
 		LEFT JOIN Gerant ON Location.id_gerant = Gerant.id;
 	`);
@@ -613,7 +614,7 @@ app.post('/location_par_gerant', async (req, res) => {
 
 app.put('/location/:id', async (req, res) => {
 	const id = req.params.id;
-	const { date_debut, date_fin_estimee } = req.body;
+	const { date_debut, date_fin_estimee, etat } = req.body;
 
 	if (!date_debut || !date_fin_estimee) {
 		return res.status(400).send({ message: 'Champs date_debut et date_fin_estimee requis.' });
@@ -621,8 +622,8 @@ app.put('/location/:id', async (req, res) => {
 
 	try {
 		const result = await db.query(
-			`UPDATE Location SET date_debut = $1, date_fin_estimee = $2 WHERE id = $3 RETURNING *;`,
-			[date_debut, date_fin_estimee, id]
+			`UPDATE Location SET date_debut = $1, date_fin_estimee = $2, etat = $3 WHERE id = $4 RETURNING *;`,
+			[date_debut, date_fin_estimee, etat,id]
 		);
 
 		if (result.rowCount === 0) {

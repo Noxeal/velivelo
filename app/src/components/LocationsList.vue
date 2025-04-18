@@ -9,6 +9,10 @@
             placeholder="Rechercher par nom du client ou vélo..."
         />
       </div>
+      <label v-if="is_gerant" class="gerant-checkbox">
+        <input type="checkbox" v-model="showOnlyMine" />
+        Voir uniquement mes locations
+      </label>
   
       <!-- Header -->
       <div class="location-item header">
@@ -87,8 +91,8 @@
         <div class="location-actions">
           <button @click="openClientModal(location.id_client)">👤</button>
           <button @click="openVeloModal(location)">🚲</button>
-          <button v-if="is_gerant" @click="openEditModal(location)">✏️</button>
-          <button v-if="is_gerant" @click="openDeleteModal(location.id_location)">🗑️</button>
+          <button @click="openEditModal(location)">✏️</button>
+          <button @click="openDeleteModal(location.id_location)">🗑️</button>
         </div>
       </div>
   
@@ -122,6 +126,14 @@
       <Modal v-if="showEditModal" @close="closeModal">
         <h2>Modifier les dates de location</h2>
         <form @submit.prevent="confirmEdit">
+          <div class="form-group">
+          <label for="etat">État de la location :</label>
+          <select id="etat" v-model="editEtat" required>
+            <option value="En Cours">En Cours</option>
+            <option value="terminée">Terminée</option>
+            <option value="annulée">Annulée</option>
+          </select>
+        </div>
           <div class="form-group">
             <label for="date-debut">Date de début :</label>
             <input
@@ -169,6 +181,10 @@
             type : Array,
             required : true,
         },
+        id_gerant: {
+            type: Number,
+            default: null
+        }
     },
 
     data() {
@@ -186,21 +202,30 @@
         editLocationData: null,
         editDateDebut: '',
         editDateFin: '',
+        editEtat: '',
         searchQuery: '',
       };
     },
     computed: {
         filteredLocations() {
             const query = this.searchQuery.toLowerCase();
+
             return this.locations_list.filter(loc => {
-                const nom = loc.nom || '';
-                const prenom = loc.prenom || '';
-                const velo = loc.nom_velo || '';
-                return (
+            const nom = loc.nom_client || '';
+            const prenom = loc.prenom_client || '';
+            const velo = loc.nom_velo || '';
+
+            const matchesSearch =
                 nom.toLowerCase().includes(query) ||
                 prenom.toLowerCase().includes(query) ||
-                velo.toLowerCase().includes(query)
-                );
+                velo.toLowerCase().includes(query);
+
+            const matchesGerant = !this.showOnlyMine || loc.id_gerant === this.id_gerant;
+
+            console.log('id_gerant:', this.id_gerant);
+            console.log('loc id_gerant', loc.id_gerant);
+
+            return matchesSearch && matchesGerant;
             });
         }
 
@@ -259,19 +284,25 @@
         }
       },
       openEditModal(location) {
-        this.editLocationData = location;
+  this.editLocationData = location;
 
-        const toLocalDate = (isoDateStr) => {
-            const date = new Date(isoDateStr);
-            const offset = date.getTimezoneOffset();
-            date.setMinutes(date.getMinutes() - offset);
-            return date.toISOString().split('T')[0];
-        };
+  const toLocalDate = (isoDateStr) => {
+    const date = new Date(isoDateStr);
+    const offset = date.getTimezoneOffset();
+    date.setMinutes(date.getMinutes() - offset);
+    return date.toISOString().split('T')[0];
+  };
 
-        this.editDateDebut = toLocalDate(location.date_debut);
-        this.editDateFin = toLocalDate(location.date_fin_estimee);
-        this.showEditModal = true;
-      },
+  this.editDateDebut = toLocalDate(location.date_debut);
+  this.editDateFin = toLocalDate(location.date_fin_estimee);
+
+  this.editEtat = location.etat;
+
+  console.log(this.editEtat);
+
+  this.showEditModal = true;
+}
+,
       async confirmEdit() {
         try {
           await fetch(`http://localhost:3000/location/${this.editLocationData.id_location}`, {
@@ -279,7 +310,8 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               date_debut: this.editDateDebut,
-              date_fin_estimee: this.editDateFin
+              date_fin_estimee: this.editDateFin,
+              etat: this.editEtat
             })
           });
           this.closeModal();
@@ -432,6 +464,16 @@
   border: 1px solid var(--color-dark-blue);
   width: 300px;
 }
+
+.gerant-checkbox {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: bold;
+  color: var(--color-dark-blue);
+}
+
 
   </style>
   

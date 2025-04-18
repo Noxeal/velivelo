@@ -15,7 +15,7 @@
           <button v-if="can_modify" class="update-button" @click.stop="showUpdateModal = true">
             Modifier
           </button>
-          <button v-if="can_modify && is_gerant" class="delete-button" @click.stop="confirmDelete">
+          <button v-if="can_modify && is_gerant" class="update-button" @click.stop="confirmDelete">
             Supprimer
           </button>
         </div>
