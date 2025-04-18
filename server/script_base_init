@@ -27,7 +27,7 @@ CREATE TABLE Velo(
 	description VARCHAR(100) NOT NULL,
 	etat VARCHAR(50) NOT NULL,
 	maintenance BOOLEAN NOT NULL,
-	etat_maintenance VARCHAR(50) NOT NULL,
+	etat_maintenance VARCHAR(50),
 	type VARCHAR(50) NOT NULL,
 	duree_de_vie INTEGER NOT NULL,
 	cycle_de_vie INTEGER NOT NULL,

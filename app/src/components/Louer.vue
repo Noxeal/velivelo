@@ -192,11 +192,10 @@ export default {
     <div class="bicycles-grid">
       <div
         v-for="bicycle in bicycleList"
-        :key="bicycle.id"
         @click="selectVelo(bicycle.id)"
         :class="['bicycle-card-wrapper', { selected: velo === bicycle.id }]"
       >
-        <BicycleCard :id="bicycle.id" :is_list_element="true" :selected="velo === bicycle.id" />
+        <BicycleCard :bicycle=bicycle :is_list_element="true" :selected="velo === bicycle.id" />
       </div>
     </div>
   </div>

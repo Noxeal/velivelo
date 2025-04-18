@@ -25,9 +25,9 @@ const db = new Db({user:process.env.db_user, password:process.env.db_password, d
 await db.connect();
 
 await db.query("SET search_path TO 'velivelo';")
-await db.query("SELECT setval('Location_id_seq', COALESCE((SELECT MAX(id) FROM Location), 1), false);")
-await db.query("SELECT setval('Client_id_seq', COALESCE((SELECT MAX(id) FROM Client), 1), false);")
-await db.query("SELECT setval('Velo_id_seq', COALESCE((SELECT MAX(id) FROM Velo), 1), false);")
+await db.query("SELECT setval('Location_id_seq', COALESCE((SELECT MAX(id) FROM Location), 1), true);")
+await db.query("SELECT setval('Client_id_seq', COALESCE((SELECT MAX(id) FROM Client), 1), true);")
+await db.query("SELECT setval('Velo_id_seq', COALESCE((SELECT MAX(id) FROM Velo), 1), true);")
 
 
 /*const res = await db.query('SELECT * FROM Client;') 
@@ -386,6 +386,7 @@ app.post('/velo', async (req, res) => {
 	  etat,
 	  description,
 	  maintenance,
+	  etat_maintenance,
 	  duree_de_vie,
 	  cycle_de_vie,
 	  annee_mise_en_service,
@@ -396,10 +397,10 @@ app.post('/velo', async (req, res) => {
 	try {
 	  const result = await db.query(
 		`INSERT INTO Velo (
-		  nom, type, etat, description, maintenance, 
+		  nom, type, etat, description, maintenance, etat_maintenance, 
 		  duree_de_vie, cycle_de_vie, annee_mise_en_service, 
 		  prix, photo
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 		RETURNING *;`,
 		[
 		  nom,
@@ -407,6 +408,7 @@ app.post('/velo', async (req, res) => {
 		  etat,
 		  description,
 		  maintenance,
+		  etat_maintenance,
 		  duree_de_vie,
 		  cycle_de_vie,
 		  annee_mise_en_service,

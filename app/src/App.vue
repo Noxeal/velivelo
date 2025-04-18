@@ -66,7 +66,7 @@ const handle_gerant = (bool, val) => {
 
 <template>
   <header>
-    <NavBar current_page=page :is_gerant=is_gerant :is_connected=is_connected :id_client="id_client" @update:change_current_page="change_current_page" @update:handle_client="handle_client" @update:handle_gerant="handle_gerant" ></NavBar>
+    <NavBar current_page=page :is_gerant=is_gerant :is_connected=is_connected @update:change_current_page="change_current_page" @update:handle_client="handle_client" @update:handle_gerant="handle_gerant" ></NavBar>
   </header>
 
   <main>

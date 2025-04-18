@@ -1,10 +1,6 @@
 <script>
 export default {
   props: {
-    id_client: {
-            type: Number,
-            required: true
-        },
     current_page: {
       type: String,
       required: true
@@ -18,7 +14,7 @@ export default {
       required: true
     }
   },
-  emits: ['update:change_current_page'],
+  emits: ['update:change_current_page', 'update:handle_client', 'update:handle_gerant'],
   data() {
     return {
       disconnected_all_pages: [
@@ -48,13 +44,11 @@ export default {
       return typeof label === 'string' && (label.endsWith('.png') || label.endsWith('.jpg') || label.endsWith('.jpeg') || label.endsWith('.svg') || label.endsWith('.gif'));
     },
     handleLogout() {
-    console.log(this.id_client);
-    this.$emit('update:handle_gerant', false, this.id_client);
-    this.$emit('update:handle_client', false, this.id_client);
-    this.$emit('update:change_current_page', 'Connection')
-}
-}
-
+      this.$emit('update:handle_gerant', false, null);
+      this.$emit('update:handle_client', false, null);
+      this.$emit('update:change_current_page', 'Connection')
+    }
+  }
 }
 </script>
 
