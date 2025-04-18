@@ -1,6 +1,6 @@
-# 🚲 VéliVélo - Gestion de Clients
+# 🚲 VéliVélo - La location de vélos trop rigolo
 
-Projet web permettant de gérer les clients d’un service de location de vélos via une interface Vue.js et une API Node.js (Express) connectée à une base de données PostgreSQL.
+VéliVélo est un projet web permettant de gérer les clients et les vélos d’un service de location de vélos via une interface Vue.js et une API Node.js (Express) connectée à une base de données PostgreSQL.
 
 ## 🛠️ Technologies utilisées
 
