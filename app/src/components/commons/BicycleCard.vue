@@ -50,6 +50,7 @@
             <input v-model="bicycle.photo" />
           </div>
           <button type="submit" class="submit-button">Enregistrer</button>
+          <button v-if="!is_gerant" @click="deleteVelo">Supprimer le vélo</button>
         </form>
       </Modal>
     </div>
