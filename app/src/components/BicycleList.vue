@@ -36,15 +36,8 @@
           :is_list_element="false"
           :is_gerant="is_gerant"
           @update-complete="reloadBicycles"
+          @bicycle-deleted="handleDeletion"
         />
-
-        <button
-          v-if="is_gerant"
-          class="delete-button"
-          @click="confirmDelete"
-        >
-          Supprimer ce vélo
-        </button>
       </div>
     </div>
   </div>
@@ -90,33 +83,13 @@ export default {
       this.selectedBicycle = null;
       this.deleteId = null;
     },
-    async confirmDelete() {
-      if (!this.deleteId) return;
-
-      if (!confirm('Voulez-vous vraiment supprimer ce vélo ?')) return;
-
-      try {
-        const response = await fetch(`http://localhost:3000/velo/${this.deleteId}`, {
-          method: 'DELETE'
-        });
-
-        if (!response.ok) {
-          const errorMessage = await response.text();
-          alert(`Erreur : ${errorMessage}`);
-          return;
-        }
-
-        this.closeModal();
-        this.reloadBicycles();
-      } catch (err) {
-        console.error('Erreur suppression vélo :', err);
-        alert('Échec de la suppression du vélo.');
-      }
-    }
-    ,
     reloadBicycles() {
       this.$emit("reload-bicycle-list");
-    }
+    },
+    handleDeletion() {
+    this.closeModal();
+    this.reloadBicycles();
+  }
   }
 };
 </script>
