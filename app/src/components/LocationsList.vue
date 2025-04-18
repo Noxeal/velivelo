@@ -153,7 +153,7 @@
               required
             />
           </div>
-          <div class="form-group">
+          <div class="form-group" v-if="is_gerant">
             <label for="paiement-actuel">Paiement actuel :</label>
             <input
               id="paiement-actuel"
